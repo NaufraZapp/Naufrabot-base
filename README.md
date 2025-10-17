@@ -10,18 +10,18 @@
 
 ## 🧠 **¿Qué es NaufraBot V2?**
 
-🔥 **NaufraBot V2** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 con **más comandos, rendimiento y estabilidad**.
+🔥 **NaufraBot V2** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 en cualquier servidor y completamente gratuito en termux, con **más comandos, rendimiento y estabilidad**.
 
 - 🚀 Compatible con la última versión de **Baileys**
-- 💬 Responde automáticamente mensajes
-- 🧩 Módulos personalizables
+- 💬 Juegos RPG integrados
+- 🧩 100% perzonalizable
 - 📦 Descargas (videos, música, stickers)
 - 🤖 Funciones con IA integradas
-- 🛡️ Protección AntiLink y AntiSpam
+- 🛡️ Protección AntiLink y AntiSpam para tu grupo 
 
 ---
 
-[![Picsart-24-06-07-05-14-22-511.jpg](https://i.postimg.cc/W3rVdNL0/Picsart-24-06-07-05-14-22-511.jpg)](https://postimg.cc/HcpRKCLL)
+[![Picsart-24-06-07-05-14-22-511.jpg]([https://i.postimg.cc/0ygy14nq/20251017-152852.jpg))](https://postimg.cc/HcpRKCLL)
 
 <p align="center">
 <a href="https://wa.me/51929838430"><img title="Author" src="https://img.shields.io/badge/NaufraZapp-black?style=for-the-badge&logo=whatsApp"></a>
@@ -65,23 +65,8 @@ Si después de instalar el bot en Termux se detiene (pantalla en blanco, pérdid
     ```bash
     npm start
     ```
-# 🔥INSTALACIÓN POR CLOUD SHELL.
-* Instala clud shell [aqui](https://www.mediafire.com/file/bp2l6cci2p30hjv/Cloud+Shell_1.apk/file)
-
-> [!NOTE]
-> Copia los códigos uno por uno, no los pegues todos juntos a la vez.
-
-```bash
-git clone https://github.com/MBM-D/NaufraZapp-MD && cd NaufraZapp-MD && yarn install && npm install
-```
-
-```bash
-npm start
-```
 
 # 💥CONTÁCTAME💥
-
-[![Picsart-24-06-07-14-00-43-215.jpg](https://i.postimg.cc/CLGP0pVv/Picsart-24-06-07-14-00-43-215.jpg)](https://postimg.cc/JGhc3g0J)
 
 [![WhatsApp](https://img.shields.io/badge/mi_numero-00802f?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/51918534156) <img src="https://raw.githubusercontent.com/Bots-WhatsApp-OFC/Bots-WhatsApp-OFC/master/accesos/iconos/whatsapp.gif" width="30">
 
