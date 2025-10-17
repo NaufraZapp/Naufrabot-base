@@ -1,0 +1,232 @@
+[
+ { 
+   "pregunta" : "Quien descubrio América ?",
+   "respusta" : "Cristóbal Colón"  
+  },
+  {
+  "pregunta" : "Quien fue el máximo líder en el movimiento nazi ? ",
+  "respuesta" : "Adolf Hitler" 
+  },
+  {
+  "pregunta" : "Quien creo la bomba nuclear ?",
+  "respuesta" : "Robert Oppenheimer"
+  },
+  {
+  "pregunta" : "Animal como las lagartija que pueden cambiar el color de su piel.?",
+    "respuesta": "Camaleón"
+  },
+  { 
+    "pregunta" : "El río más largo de América?",
+    "respuesta": "Amazon"
+  },
+  { 
+    "pregunta": "El nombre del lujoso barco de pasajeros que se hundió durante su viaje inaugural en 1912 ?",
+    "respuesta": "Titanic"
+  },
+  {
+   "pregunta": "¿Cuál es el océano más grande del mundo?", 
+   "respuesta": "El océano Pacífico"
+   },
+   {
+   "pregunta": "¿Quién escribió 'Cien años de soledad'?",
+    "respuesta": "Gabriel García Márquez"
+    },
+   {
+  "pregunta": "¿Cuál es la capital de Italia?", 
+  "respuesta": "Roma"
+  },
+  {
+  "pregunta": "¿En qué año terminó la Segunda Guerra Mundial?", 
+  "respuesta": "1945"
+  },
+   {
+"pregunta": "¿Quién fue el primer presidente de Estados Unidos?",
+ "respuesta": "George Washington"
+ },
+ {
+ "pregunta": "¿En qué año comenzó la Revolución Francesa?", 
+ "respuesta": "1789"
+ },
+   {
+"pregunta": "¿Cuál es el país más grande del mundo por área terrestre?",
+ "respuesta": "Rusia"
+ },
+   {
+"pregunta": "¿Quién pintó la Mona Lisa?", 
+"respuesta": "Leonardo da Vinci"
+ },
+   {
+"pregunta": "¿Cuál es el metal más abundante en la corteza terrestre?",
+ "respuesta": "El aluminio"
+ },
+   {
+"pregunta": "¿Quién fue el autor de 'El Principito'?", 
+"respuesta": "Antoine de Saint-Exupéry"
+ },
+   {
+"pregunta": "¿En qué año llegó Cristóbal Colón a América?",
+ "respuesta": "1492"
+ },
+   {
+"pregunta": "¿Cuál es la montaña más alta de África?",
+ "respuesta": "El Kilimanjaro"
+ },
+   {
+"pregunta": "¿Quién descubrió la penicilina?", 
+"respuesta": "Alexander Fleming"
+ },
+   {
+"pregunta": "¿Cuál es el elemento más común en la atmósfera terrestre?", 
+"respuesta": "El nitrógeno"
+ },
+   {
+"pregunta": "¿Quién escribió 'Romeo y Julieta'?", 
+"respuesta": "William Shakespeare"
+ },
+   {
+"pregunta": "¿En qué año se fundó la ONU?", 
+"respuesta": "1945"
+ },
+   {
+"pregunta": "¿Cuál es el animal terrestre más grande?",
+ "respuesta": "El elefante africano"
+ },
+   {
+"pregunta": "¿Quién fue el primer hombre en la Luna?",
+ "respuesta": "Neil Armstrong"
+ },
+   {
+"pregunta": "¿Cuál es la capital de Canadá?", 
+"respuesta": "Ottawa"
+ },
+   {
+"pregunta": "¿En qué año comenzó la Primera Guerra Mundial?",
+ "respuesta": "1914"
+ },
+   {
+"pregunta": "¿Quién escribió 'Don Quijote de la Mancha'?",
+ "respuesta": "Miguel de Cervantes"
+ },
+   {
+"pregunta": "¿Cuál es el país más poblado del mundo?", 
+"respuesta": "China"
+ },
+   {
+"pregunta": "¿Quién fue el primer emperador romano?",
+ "respuesta": "César Augusto"
+ },
+   {
+"pregunta": "¿En qué año se firmó la Declaración de Independencia de Estados Unidos?",
+ "respuesta": "1776"
+ },
+   {
+"pregunta": "¿Cuál es la montaña más alta del mundo?",
+ "respuesta": "El Monte Everest"
+ },
+   {
+"pregunta": "¿Quién fue el líder de la Revolución Rusa?",
+ "respuesta": "Vladimir Lenin"
+ },
+   {
+"pregunta": "¿Cuál es el país más pequeño del mundo?", 
+"respuesta": "El Vaticano"
+ },
+   {
+"pregunta": "¿En qué país se encuentra el río Nilo?", 
+"respuesta": "Egipto"
+ },
+   {
+"pregunta": "¿Quién escribió 'Orgullo y prejuicio'?", 
+"respuesta": "Jane Austen"
+ },
+   {
+"pregunta": "¿Cuál es el animal más rápido del mundo?", 
+"respuesta": "El guepardo"
+ },
+   {
+"pregunta": "¿Quién pintó 'La noche estrellada'?", 
+"respuesta": "Vincent van Gogh"
+ },
+   {
+"pregunta": "¿En qué país se encuentra la Gran Muralla China?", 
+"respuesta": "China"
+ },
+   {
+"pregunta": "¿Cuál es el país más grande de América del Sur?",
+ "respuesta": "Brasil"
+ },
+   {
+"pregunta": "¿Quién fue el primer astronauta en orbitar la Tierra?", 
+"respuesta": "Yuri Gagarin"
+ },
+   {
+"pregunta": "¿Cuál es el río más largo del mundo?", 
+"respuesta": "El río Amazonas"
+ },
+   {
+"pregunta": "¿Quién es el autor de '1984'?", 
+"respuesta": "George Orwell"
+ },
+   {
+"pregunta": "¿En qué año se firmó la Declaración de Derechos Humanos de la ONU?", 
+"respuesta": "1948"
+ },
+   {
+"pregunta": "¿Cuál es la capital de Australia?", "respuesta": "Canberra"
+ },
+   {
+"pregunta": "¿Quién pintó 'La última cena'?", 
+"respuesta": "Leonardo da Vinci"
+ },
+   {
+"pregunta": "¿Cuál es el desierto más grande del mundo?", 
+"respuesta": "El desierto del Sahara"
+ },
+   {
+"pregunta": "¿Quién escribió 'La Odisea'?", "respuesta": "Homero"
+ },
+   {
+"pregunta": "¿En qué año se fundó Google?", 
+"respuesta": "1998"
+ },
+   {
+"pregunta": "¿Cuál es el metal más caro del mundo?", 
+"respuesta": "El rodio"
+ },
+   {
+"pregunta": "¿Quién fue el presidente de Estados Unidos durante la Segunda Guerra Mundial?", 
+"respuesta": "Franklin D. Roosevelt"
+ },
+   {
+"pregunta": "¿Cuál es el país más pequeño de América del Sur?", 
+"respuesta": "Surinam"
+ },
+   {
+"pregunta": "¿Quién fue el primer hombre en alcanzar el Polo Sur?", 
+"respuesta": "Roald Amundsen"
+ },
+   {
+"pregunta": "¿En qué país se encuentra la ciudad de Petra?", 
+"respuesta": "Jordania"
+ },
+   {
+"pregunta": "¿Cuál es la capital de Argentina?", 
+"respuesta": "Buenos Aires"
+ },
+   {
+"pregunta": "¿Quién escribió 'El Señor de los Anillos'?", 
+"respuesta": "J.R.R. Tolkien"
+ },
+   {
+"pregunta": "¿Cuál es el océano más pequeño del mundo?", 
+"respuesta": "El océano Ártico"
+ },
+   {
+"pregunta": "¿Quién fue el primer hombre en llegar al Polo Norte?", 
+"respuesta": "Robert Edwin Peary"
+ },
+   {
+"pregunta": "¿En qué año terminó la Guerra Fría?", 
+"respuesta": "1991"
+}
+  ]

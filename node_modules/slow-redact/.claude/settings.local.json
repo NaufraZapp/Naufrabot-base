@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(node -e \"\nconst fs = require(''fs'');\nconst code = fs.readFileSync(''./index.js'', ''utf8'');\n\n// Extract just the parsePath function for testing\nconst parsePathMatch = code.match(/function parsePath \\(path\\) \\{[\\s\\S]*?\\n\\}/);\nif (!parsePathMatch) {\n  console.log(''Could not find parsePath function'');\n  process.exit(1);\n}\n\nconst parsePathCode = parsePathMatch[0];\neval(parsePathCode);\n\n// Test the problematic paths\nconsole.log(''Testing parsePath function...'');\nconsole.log(''parsePath(\"\"[\\\"\"\\\"\"\\\"\"]\\.c\"\"):'', parsePath(''[\\\"\"\\\"\"\\\"\"]\\.c'')); // [\"\"\"\"]\\.c\nconsole.log(''parsePath(\"\"[\\''\\'']\\.c\"\"):'', parsePath(''[\\\\''\\\\'']\\.c'')); // [\\''\\'']\\.c\nconsole.log(''parsePath(\"\"headers.authorization\"\"):'', parsePath(''headers.authorization'')); // should work\n\")",
+      "Bash(node -e \"\nconst fs = require(''fs'');\nconst code = fs.readFileSync(''./index.js'', ''utf8'');\n\n// Extract just the parsePath function for testing\nconst parsePathMatch = code.match(/function parsePath \\(path\\) \\{[\\s\\S]*?\\n\\}/);\nif (!parsePathMatch) {\n  console.log(''Could not find parsePath function'');\n  process.exit(1);\n}\n\nconst parsePathCode = parsePathMatch[0];\neval(parsePathCode);\n\n// Test the problematic paths\nconsole.log(''Testing parsePath function...'');\nconsole.log(''parsePath(\\\"\"[\\\\\\\"\"\\\\\\\"\"].c\\\"\"):'', parsePath(''[\\\"\"\\\"\"].c'')); // [\"\"\"\"]\\.c\nconsole.log(''parsePath(\\\"\"[\\\\'']\\\\].c\\\"\"):'', parsePath(''[\\\\''\\\\'']\\.c'')); // [\\''\\'']\\.c\nconsole.log(''parsePath(\\\"\"headers.authorization\\\"\"):'', parsePath(''headers.authorization'')); // should work\n\")",
+      "Bash(gh issue view:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
