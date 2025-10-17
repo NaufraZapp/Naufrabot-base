@@ -1,3 +1,26 @@
+<h1 align="center">
+✨🚀 <span style="color:#00FFAA;">NaufraBot V2</span> 🤖💚
+</h1>
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Poppins&pause=1000&color=00FFAA&center=true&vCenter=true&width=435&lines=🤖+El+bot+de+WhatsApp+m%C3%A1s+completo!;💬+Crea%2C+administra+y+personaliza+tu+bot;⚙️+Totalmente+configurable+y+activo+24%2F7" alt="Typing SVG" />
+</p>
+
+---
+
+## 🧠 **¿Qué es NaufraBot V2?**
+
+🔥 **NaufraBot V2** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 con **más comandos, rendimiento y estabilidad**.
+
+- 🚀 Compatible con la última versión de **Baileys**
+- 💬 Responde automáticamente mensajes
+- 🧩 Módulos personalizables
+- 📦 Descargas (videos, música, stickers)
+- 🤖 Funciones con IA integradas
+- 🛡️ Protección AntiLink y AntiSpam
+
+---
+
 [![Picsart-24-06-07-05-14-22-511.jpg](https://i.postimg.cc/W3rVdNL0/Picsart-24-06-07-05-14-22-511.jpg)](https://postimg.cc/HcpRKCLL)
 
 <p align="center">
