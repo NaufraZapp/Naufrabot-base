@@ -2,9 +2,7 @@
 ✨🚀 <span style="color:#00FFAA;">NaufraBot V2</span> 🤖💚
 </h1>
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Poppins&pause=1000&color=00FFAA&center=true&vCenter=true&width=435&lines=🤖+El+bot+de+WhatsApp+m%C3%A1s+completo!;💬+Crea%2C+administra+y+personaliza+tu+bot;⚙️+Totalmente+configurable+y+activo+24%2F7" alt="Typing SVG" />
-</p>
+[![Picsart-24-06-07-05-14-22-511.jpg]([https://i.postimg.cc/0ygy14nq/20251017-152852.jpg))](https://postimg.cc/HcpRKCLL)
 
 ---
 
@@ -20,12 +18,6 @@
 - 🛡️ Protección AntiLink y AntiSpam para tu grupo 
 
 ---
-
-[![Picsart-24-06-07-05-14-22-511.jpg]([https://i.postimg.cc/0ygy14nq/20251017-152852.jpg))](https://postimg.cc/HcpRKCLL)
-
-<p align="center">
-<a href="https://wa.me/51929838430"><img title="Author" src="https://img.shields.io/badge/NaufraZapp-black?style=for-the-badge&logo=whatsApp"></a>
-<p/>
 
 # 🔥INSTALACIÓN POR TERMUX.
 * Instala el termux [aqui](https://f-droid.org/repo/com.termux_118.apk)
