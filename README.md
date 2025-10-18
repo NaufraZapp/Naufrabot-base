@@ -2,7 +2,10 @@
 ✨🚀 <span style="color:#00FFAA;">NaufraBot V2</span> 🤖💚
 </h1>
 
-[![Picsart-24-06-07-05-14-22-511.jpg]([https://i.postimg.cc/0ygy14nq/20251017-152852.jpg))](https://postimg.cc/HcpRKCLL)
+<p align="center">
+  <img src="https://i.postimg.cc/0ygy14nq/20251017-152852.jpg" width="300" alt="NaufraBot V2" />
+</p>
+
 
 ---
 
@@ -26,37 +29,24 @@
 > Copia los códigos uno por uno, no los pegues todos juntos a la vez.
 
 ```bash
+pkg upgrade -y && pkg update -y && pkg install git -y && pkg install nodejs-lts -y && pkg install ffmpeg -y && pkg install nodejs -y && pkg install wget -y && pkg install tesseract -y
+```
+
+```bash
 termux-setup-storage
 ```
 
 ```bash
-apt update && apt upgrade && pkg install -y git nodejs ffmpeg imagemagick yarn
+cd /sdcard && git clone https://github.com/NaufraZapp/Naufrabot-base
 ```
 
 ```bash
-git clone https://github.com/MBM-D/NaufraZapp-MD && cd NaufraZapp-MD
+cd Naufrabot-base
 ```
 
 ```bash
-yarn install && npm install
+node index
 ```
-
-```bash
-npm start 
-```
-# 🔥ACTIVAR EN CASO DE DETENERSE EN TERMUX
-
-Si después de instalar el bot en Termux se detiene (pantalla en blanco, pérdida de conexión a Internet, reinicio del dispositivo), sigue estos pasos:
-
-1. Abre Termux y navega al directorio del bot:
-    ```bash
-    cd NaufraZapp-MD
-    ```
-
-2. Inicia el bot nuevamente:
-    ```bash
-    npm start
-    ```
 
 # 💥CONTÁCTAME💥
 
