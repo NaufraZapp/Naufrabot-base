@@ -26,7 +26,10 @@
 * Instala el termux [aqui](https://f-droid.org/repo/com.termux_118.apk)
 
 > [!NOTE]
-> Copia los códigos uno por uno, no los pegues todos juntos a la vez.👁️ algunos comandos como las descargas nesecitan una clave API para poder funcionar, puedes adquirir tu clave en nuestra página oficial api.naufrabot.com
+> Copia los códigos uno por uno, no los pegues todos juntos a la vez. 👁️  
+> Algunos comandos como las descargas necesitan una clave API para poder funcionar.  
+> Puedes adquirir tu clave en nuestra página oficial:  
+> 👉 [https://api.naufrabot.com](https://api.naufrabot.com)
 
 ```bash
 pkg upgrade -y && pkg update -y && pkg install git -y && pkg install nodejs-lts -y && pkg install ffmpeg -y && pkg install nodejs -y && pkg install wget -y && pkg install tesseract -y
@@ -50,7 +53,7 @@ node index
 
 # 💥CONTÁCTAME💥
 
-[![WhatsApp](https://img.shields.io/badge/mi_numero-00802f?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/51918534156) <img src="https://raw.githubusercontent.com/Bots-WhatsApp-OFC/Bots-WhatsApp-OFC/master/accesos/iconos/whatsapp.gif" width="30">
+[![WhatsApp](https://img.shields.io/badge/mi_numero-00802f?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/51927339074) <img src="https://raw.githubusercontent.com/Bots-WhatsApp-OFC/Bots-WhatsApp-OFC/master/accesos/iconos/whatsapp.gif" width="30">
 
 [![WhatsApp](https://img.shields.io/badge/Canal_de_WhatsApp-00802f?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029Vaz3WoQ6RGJPJQcMXQ14) <img src="https://raw.githubusercontent.com/Bots-WhatsApp-OFC/Bots-WhatsApp-OFC/master/accesos/iconos/whatsapp.gif" width="30">
 
