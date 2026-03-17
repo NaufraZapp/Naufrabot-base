@@ -62,6 +62,129 @@ const { checkCasino,checkAttp,checkEmoji,checkEve, addClaimTraga, checkClaimTrag
 
 
   
+ //SRAPERS
+ 
+  const pathMod = require("path");
+const yts = require("yt-search");
+
+//scraper face audio 
+
+function fbAudioDownload({ url }) {
+  return new Promise((resolve, reject) => {
+    const id = Date.now();
+    const outputDir = "./downloads";
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const output = pathMod.join(outputDir, `${id}.%(ext)s`);
+
+    const cmd = `
+yt-dlp \
+-x --audio-format mp3 --audio-quality 0 \
+-o "${output}" "${url}"
+`;
+
+    exec(cmd, { maxBuffer: 1024 * 1024 * 100 }, (err) => {
+      if (err) return reject(err.message);
+
+      const files = fs
+        .readdirSync(outputDir)
+        .filter(f => f.startsWith(id.toString()));
+
+      if (!files.length) return reject("Archivo no generado");
+
+      const filePath = pathMod.join(outputDir, files[0]);
+
+      resolve({
+        filePath,
+        fileName: files[0]
+      });
+    });
+  });
+}
+
+//scraper face video
+
+function fbVideoDownload({ url }) {
+  return new Promise((resolve, reject) => {
+    const id = Date.now();
+    const outputDir = "./downloads";
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const output = pathMod.join(outputDir, `${id}.%(ext)s`);
+
+    const cmd = `
+yt-dlp \
+-f best \
+--merge-output-format mp4 \
+-o "${output}" "${url}"
+`;
+
+    exec(cmd, { maxBuffer: 1024 * 1024 * 200 }, (err) => {
+      if (err) return reject(err.message);
+
+      const files = fs
+        .readdirSync(outputDir)
+        .filter(f => f.startsWith(id.toString()));
+
+      if (!files.length) return reject("Archivo no generado");
+
+      const filePath = pathMod.join(outputDir, files[0]);
+
+      resolve({
+        filePath,
+        fileName: files[0]
+      });
+    });
+  });
+}
+
+
+//scraper Youtube mp4/mp3
+
+function ytdlpDownload({ query, type = "mp3" }) {
+  return new Promise((resolve, reject) => {
+    const id = Date.now();
+    const outputDir = "./downloads";
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const output = pathMod.join(outputDir, `${id}.%(ext)s`);
+    const isUrl = /^https?:\/\//i.test(query);
+    const finalQuery = isUrl ? query : `ytsearch1:${query}`;
+
+    const cmd =
+      type === "mp3"
+        ? `yt-dlp -x --audio-format mp3 --audio-quality 0 -o "${output}" "${finalQuery}"`
+        : `yt-dlp \
+-f "bv*[vcodec^=avc1][height<=360]+ba[acodec^=mp4a]/b[ext=mp4]" \
+--merge-output-format mp4 \
+--postprocessor-args "ffmpeg:-movflags +faststart" \
+-o "${output}" "${finalQuery}"`;
+
+    exec(cmd, { maxBuffer: 1024 * 1024 * 200 }, (err) => {
+      if (err) return reject(err.message);
+
+      const files = fs.readdirSync(outputDir).filter(f =>
+        f.startsWith(id.toString())
+      );
+
+      if (!files.length) return reject("Archivo no generado");
+
+      resolve({
+        filePath: pathMod.join(outputDir, files[0]),
+        fileName: files[0]
+      });
+    });
+  });
+}
 
 
       
@@ -96,8 +219,9 @@ if (horap >= '01' && horap <= '05') {
 
 
  //Configuraciones 
-var { creador, owner, Bot, JpgBot, API_KEY_NAUFRA } = require("./settings/settings.json");        
+var { creador, owner, Bot, JpgBot, NAUFRA_KEY } = require("./settings/settings.json");        
 const prefixo = ['#','/','•','.','!','?','*']// @ Prefijos
+const APINAUFRA = 'https://api.naufrabot.com'
 
 
 
@@ -608,11 +732,54 @@ if (!botActivo && !isOwner) return
 
 switch(comando) {
 
+
+case 'prueba':
+enviar(`Este es un comando de prueba 🌟🌟
+
+......`);
+break
+
+case 'comando2':
+enviar(`🧩Este es un comando nuevo`);
+break
 //Comandos owner
 
 
   
+case 'miapi':
+case 'apikey': {
 
+try{
+
+const apiURL = `${APINAUFRA}/api/keyinfo?apikey=${NAUFRA_KEY}`;
+
+const data = await fetchJson(apiURL);
+
+if(!data.status){
+return enviar("❌ Error consultando API");
+}
+
+enviar(`🔑 *INFORMACIÓN DE API*
+
+👤 Usuario: ${data.usuario}
+
+📊 Requests usadas: ${data.usadas}
+📦 Límite total: ${data.limite}
+
+⚡ Restantes: ${data.restantes}
+
+🌐 API: api.naufrabot.com`);
+
+}catch(e){
+
+console.log(e)
+
+enviar("❌ Error consultando API")
+
+}
+
+}
+break;
   
   
   case 'menu':
@@ -792,8 +959,111 @@ enviar(`💫 ¿𝙌𝙪𝙞𝙚𝙧𝙚𝙨 𝙪𝙣 𝙗𝙤𝙩 𝙘𝙤𝙢�
 [💬] https://naufrabot.com/`);
 break
 
+case 'personalizarbot': {
+
+let texto = `🤖 *PERSONALIZAR NAUFRABOT BASE*
+
+Este bot es *100% editable*, puedes modificarlo completamente a tu gusto.
+
+📚 *Pasos para personalizar el bot*
+
+1️⃣ Cambiar nombre del bot
+Edita el nombre en el archivo principal del bot.
+
+2️⃣ Cambiar prefijo
+Puedes cambiar el prefijo de comandos fácilmente.
+
+3️⃣ Cambiar mensajes
+Todos los mensajes del bot son editables.
+
+4️⃣ Cambiar logo o foto
+Puedes poner tu propia imagen o marca.
+
+5️⃣ Agregar o quitar comandos
+El bot es modular, puedes modificar las *case*.
+
+6️⃣ Configurar APIs
+Algunos comandos necesitan API externa.
+
+7️⃣ Personalizar menú
+Puedes editar el menú principal.
+
+🎥 *Tutoriales completos en YouTube*
+
+He creado *más de 10 videos* explicando cómo personalizar el bot paso a paso 👇
+
+📺 YouTube:
+https://youtube.com/playlist?list=PLsjiVxv1dUKw1bKCmvj43AuUDYOm8ghPF&si=NB_u_fSGZx0HhggK
+
+Ahí encontrarás guías para:
+
+✔ Personalizar comandos
+✔ Modificar funciones
+✔ Configurar APIs
+✔ Crear nuevos sistemas
+
+🚀 *NAUFRABOT BASE es totalmente personalizable.*
+
+¡Haz tu propia versión del bot!`
+
+await sock.sendMessage(from,{ text: texto },{ quoted: info })
+
+}
+break
+
+
+case 'comprarapi': {
+
+let texto = `🌐 *COMPRAR API PARA EL BOT*
+
+Algunos comandos del bot necesitan *API externa* para funcionar correctamente.
+
+Por ejemplo:
+
+📥 Descargas
+🎨 Generar stickers con texto
+🌍 HTTP requests
+📹 Descargas de Facebook
+📸 Descargas de redes sociales
+⚙️ Inteligencia artificial 
+
+Para usar estas funciones necesitas una *API Key*.
+
+🚀 *API oficial de Naufrabot*
+
+Puedes comprar tu API aquí:
+
+🔗 https://api.naufrabot.com
+
+📚 *Pasos para usar la API*
+
+1️⃣ Crear una cuenta en la web  
+2️⃣ Comprar tu API Key  
+3️⃣ Copiar la API Key  
+4️⃣ Pegarla en la configuración del bot  
+5️⃣ Reiniciar el bot  
+
+Después de eso los comandos funcionarán correctamente.
+
+✨ *Ventajas de la API*
+
+✔ Respuestas rápidas  
+✔ Alta estabilidad  
+✔ Muchas funciones disponibles  
+✔ Soporte continuo  
+
+🌐 Web oficial:
+https://api.naufrabot.com
+
+🚀 *Potencia tu bot con la API oficial de Naufrabot.*`
+
+await sock.sendMessage(from,{ text: texto },{ quoted: info })
+
+}
+break
+
+
 case 'grupos':
-case 'grupo':
 enviar(`🧩 𝙂𝙍𝙐𝙋𝙊 𝙊𝙁𝙄𝘾𝙄𝘼𝙇 𝙋𝘼𝙍𝘼 𝙐𝙎𝘼𝙍 𝙐𝙉 𝘽𝙊𝙏 𝘼𝘾𝙏𝙄𝙑𝙊 24/7 👇
 
 ➫https://chat.whatsapp.com/Jd7WKQBsAhkCG4k1SPxK7r?mode=ac_t`);
@@ -1052,7 +1322,47 @@ case 'antilink':
 break;
 
 
+case 'grupo': {
 
+if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins) return enviar(respuesta.admin)
+if (!isBotGroupAdmins) return enviar(respuesta.botadmin)
+
+if (!args[0]) {
+return enviar(`⚙️ *Configuración del grupo*
+
+Usa:
+• */grupo abrir* → Abrir el grupo
+• */grupo cerrar* → Cerrar el grupo`)
+}
+
+if (args[0] === 'abrir') {
+
+await sock.groupSettingUpdate(from, 'not_announcement')
+
+enviar(`🟢 *GRUPO ABIERTO*
+
+Ahora todos los miembros pueden enviar mensajes.`)
+
+} else if (args[0] === 'cerrar') {
+
+await sock.groupSettingUpdate(from, 'announcement')
+
+enviar(`🔒 *GRUPO CERRADO*
+
+Solo los administradores pueden enviar mensajes.`)
+
+} else {
+
+enviar(`⚠️ Opción inválida
+
+Usa:
+• */grupo abrir*
+• */grupo cerrar*`)
+}
+
+}
+break
 
 
 // STICKERS 
@@ -1103,31 +1413,78 @@ return enviar(`Marque una imagen o \nUn vídeo máximo de 10 segundos ⏲️`)
 break
 
 ///Nesecitas clave API//
-case 'attp': 
-case 'attp2': 
-case 'attp3': 
+case "attp":
+case "attp2":
+case "attp3":
+if(!isReg) return enviar(respuesta.registro)
+if (!q) return enviar("Coloca un texto o emoji después del comando")
+
 try {
-    if (!q.trim()) return enviar(`*_❕Escribe el texto que quieras!_*\n- *🧑‍🏫 Por ejemplo:* !attp te amo`);
-    enviar('*Ok amor❤️ Estoy convirtiendo*');
 
-    var Fontes = commandArgs === "attp2" ? "Roboto" : "Noto Emoji, Noto Sans Mono";
+let url = `${APINAUFRA}/api/${messagesC}?text=${encodeURIComponent(q)}&apikey=${NAUFRA_KEY}`
 
-    // Descargar el sticker como buffer
-    let axios = require("axios");
-    let res = await axios.get(`https://api.bronxyshost.com.br/api-bronxys/attp_edit?texto=${encodeURIComponent(q)}&fonte=${Fontes}&apikey=${API_KEY_NAUFRA}`, {
-        responseType: 'arraybuffer'
-    });
+let res = await fetch(url)
+let buffer = await res.buffer()
 
-    // Enviar el sticker desde el buffer
-    await sock.sendMessage(from, { sticker: res.data }, { quoted: info });
+await sock.sendMessage(from, {
+sticker: buffer
+}, { quoted: info })
 
 } catch (e) {
-    console.error(e);
-    return enviar("Error..");
+console.log(e)
+enviar("Error al crear sticker")
 }
-break;
+
+break
 
 
+
+case 'ship': {
+if(!isReg) return enviar(respuesta.registro)
+if (!isGroup) return enviar('solo disponible en grupos')
+
+if (!info.message?.extendedTextMessage?.contextInfo?.mentionedJid || 
+info.message.extendedTextMessage.contextInfo.mentionedJid.length < 2)
+return enviar('💞 Menciona a dos personas para calcular su *nivel de amor* 💘')
+
+const users = info.message.extendedTextMessage.contextInfo.mentionedJid
+
+const user1 = users[0]
+const user2 = users[1]
+
+const loveRate = Math.floor(Math.random() * 100) + 1
+
+let foto1, foto2
+
+try {
+foto1 = await sock.profilePictureUrl(user1, 'image')
+} catch {
+foto1 = 'https://i.postimg.cc/VkqDjMdJ/75499-coraz-el-dia-de-san-valentin-amor-corazon-de-amor-x750.jpg'
+}
+
+try {
+foto2 = await sock.profilePictureUrl(user2, 'image')
+} catch {
+foto2 = 'https://i.postimg.cc/VkqDjMdJ/75499-coraz-el-dia-de-san-valentin-amor-corazon-de-amor-x750.jpg'
+}
+
+const fondo = 'https://telegra.ph/file/394705b02d10509c435cf.jpg'
+
+const shipImg = `${APINAUFRA}/api/canvas/ship?apikey=${NAUFRA_KEY}&foto1=${encodeURIComponent(foto1)}&foto2=${encodeURIComponent(foto2)}&fundo=${encodeURIComponent(fondo)}&mat=${loveRate}`
+
+await sock.sendMessage(from, {
+image: { url: shipImg },
+caption: `💘 *𝐂𝐀𝐋𝐂𝐔𝐋𝐀𝐃𝐎𝐑 𝐃𝐄 𝐀𝐌𝐎𝐑* 💘
+
+@${user1.split('@')[0]} 💖 @${user2.split('@')[0]}
+
+• *${loveRate}% de Amor Eterno* 🌹`,
+mentions: [user1, user2]
+
+}, { quoted: info })
+
+}
+break
 
                 
                 
@@ -1207,36 +1564,81 @@ case 'calcular':
             enviar(`\n╭──────────────────\n││「 𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢𝗦 」│\n│➫┇${q} = *${resultzx}*\n╰──────────────────`)
             break
             
-//Nesecita clave API ////
-case 'nik': case 'nic':
-case 'generarnick': case 'nick':
 
-try {
-if(!q.trim()) return enviar(`Escriba su nombre para enviar con letras especiales, Ejemplo: !nick NaufraBot`);
-ABC = await fetchJson(`https://api.bronxyshost.com.br/api-bronxys/gerar_nick?nick=${encodeURI(q)}&apikey=${API_KEY_NAUFRA}`)
-AB = `*🗒️Lista a base de su nombre,* Escoja la mejor fuente que desea utilizar:\n\n`;
-for ( i of ABC) {
-AB += `${i}\n\n`;
-}
-enviar(AB);
-} catch (e) {
-return enviar("Error..");
-}
-break;
 
 
 //nesecitas api
-case 'ia': case 'openai': case 'gpt': case 'chatgpt':
-try {
-  if (!q || !q.trim()) return enviar(`Escribe tu pregunta, Ejemplo: .ia ¿Cuál es la capital de Francia?`);
+case 'gpt': case 'gpt4': case 'openai': case 'chatgpt':
+case 'ia': {
+
+  if (!q) return enviar('❌ Escribe una pregunta');
+
+  try {
   
-  enviar("*🔍 BUSCANDO 🔍*");
-  ABC = await fetchJson(`https://api.bronxyshost.com.br/api-bronxys/PERGUNTE_E_EU_RESPONDO?q=${encodeURIComponent(q.trim())}&apikey=${API_KEY_NAUFRA}`)
-  
-  enviar(`( ${ABC.msg} )`);
-} catch (err) { 
-  console.error(err);
-  enviar("Error..");
+    const apiURL = `${APINAUFRA}/chatgpt?apikey=${NAUFRA_KEY}&prompt=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+    const data = await fetchJson(apiURL);
+
+    const mensaje = `🤖 *ChatGPT*\n\n${data.respuesta}`;
+
+    await sock.sendMessage(from, { text: mensaje }, { quoted: info });
+
+  } catch (e) {
+    console.log("ERROR IA:", e);
+    enviar('❌ Error usando la IA');
+  }
+
+}
+break;
+
+//nesecita API 
+
+case 'ytsearch': {
+
+    if (!q) return enviar('❌ Escribe un nombre para buscar en YouTube');
+
+    
+    try {
+
+        
+        const apiURL = `${APINAUFRA}/ytsearch?apikey=${NAUFRA_KEY}&q=${encodeURIComponent(q.trim())}`;
+
+        console.log("🔗 Llamando a API:", apiURL);
+
+        const apiData = await fetchJson(apiURL);
+
+        if (!apiData || !apiData.status)
+            return reply('❌ No se pudo obtener respuesta válida de la API');
+
+        if (!apiData.resultados || !Array.isArray(apiData.resultados))
+            return reply('❌ La API devolvió datos inválidos');
+
+        if (apiData.resultados.length === 0)
+            return reply('❌ No se encontraron resultados');
+
+        const firstVideo = apiData.resultados[0];
+
+        let text = `「✦」Resultados para *${q.trim()}*\n\n`;
+
+        for (const video of apiData.resultados) {
+
+            text += `❀ *${video.title}*\n`;
+            text += `> ✐ Canal » *${video.author}*\n`;
+            text += `> ⴵ Duración » *${video.duration}*\n`;
+            text += `> 👁 Visitas » *${video.views.toLocaleString()}*\n`;
+            text += `> 🜸 Link » _${video.url}_\n\n`;
+        }
+
+        await sock.sendMessage(from, {
+            image: { url: firstVideo.thumbnail },
+            caption: text.trim()
+        }, { quoted: info });
+
+    } catch (e) {
+        console.log("❌ ERROR YTSEARCH CASE:", e);
+        enviar('❌ Error buscando videos en YouTube');
+    }
+
 }
 break;
 
@@ -1244,31 +1646,47 @@ break;
 //Economía niveles y experiencia 
 
 case 'perfil' : case 'cartera' :
-case 'nivel' : case 'minivel' :{
+case 'nivel' : case 'minivel' : {
+
 if(!isReg) return enviar(respuesta.registro)
+
 var saldo = MoneyOfSender(sender)
 const Xp = xpOfsender(sender)
 const Mnv = levelOfsender(sender)
 const Rxxp = Rxp(sender)
 const myrep2 = repUser(sender)
 const Xpnull = Rxxp - 1000
+
 if(Xp === null) return addXp(sender,Xpnull)
+
+let foto
+
+try {
+foto = await sock.profilePictureUrl(sender, 'image')
+} catch {
+foto = 'https://i.postimg.cc/85NsPp8j/20260131-152616.jpg'
+}
+
 const Mp = `
-╔══✦❖✦══【 𝑻𝒖 𝑷𝒆𝒓𝒇𝒊𝒍 】══✦❖✦══╗
+╔══✦❖【 𝑻𝒖 𝑷𝒆𝒓𝒇𝒊𝒍 】❖✦══╗
 🏷️  𝐍𝐨𝐦𝐛𝐫𝐞      »  @${sender.split('@')[0]}
 ⚔️  𝐑𝐚𝐧𝐠𝐨       »  ${Mlevel}
 👑  𝐑𝐞𝐩𝐮𝐭𝐚𝐜𝐢𝐨́𝐧  »  ${myrep2}
 💰  𝐃𝐢𝐧𝐞𝐫𝐨     »  ₹${saldo} 𝐑𝐮𝐩𝐢𝐚𝐬
 📈  𝐍𝐢𝐯𝐞𝐥       »  ${Mnv} ➜ ${Mnv + 1}
 📚  𝐄𝐗𝐏         »  ${Xp} / ${Rxxp + 1000}
-╚══✦❖✦══【 𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐨 】══✦❖✦══╝
+╚══✦❖【 𝐏𝐫𝐨𝐠𝐫𝐞𝐬𝐨 】❖✦══╝
 ▰▰ ${Mrxp} ▰▰
 `
-   sock.sendMessage(from,{text : Mp, mentions : [sender]},{quoted : info})        
-  
-}
-break 
 
+await sock.sendMessage(from,{
+image: { url: foto },
+caption: Mp,
+mentions: [sender]
+},{ quoted: info })
+
+}
+break
 //comando tragamonedas 
 case 'tragamonedas':
 case 'tragamoneda':
@@ -1805,179 +2223,520 @@ if (q.startsWith("2")) {
 break;
 
 //DESCARGAS
+
+
 //nesecitas api
-case 'play': case 'p':
-    if (!q) return enviar(`- Ejemplo: !play nombre de la canción\nLa canción se descargará, solo elige audio o video. Si no se descarga, es posible que YouTube haya restringido la descarga, o algo similar.`);
+
+case 'playvideo':
+case 'ytmp4': {
+if(!isReg) return enviar(respuesta.registro)
+  if (!q)
+    return enviar('❌ Escribe un nombre o link de YouTube');
+  try {
+
+
+
+    // Endpoint info del video
+    const apiURL =
+      `${APINAUFRA}/ytinfo?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
+
+    const apiData = await fetchJson(apiURL);
+
+    // SI YTINFO FUNCIONA
+    if (apiData && apiData.Estado === "online") {
+
+      const data = apiData.Resultado;
+
+      await sock.sendMessage(from, {
+        image: { url: data.Miniatura },
+        caption: `「✪」 *${data.Titulo}*\n\n*ⴵ Duración:* ${data.Duracion}\n*✐ Canal:* ${data.Canal.Nombre}\n*👁 Vistas:* ${data.Visualizaciones}\n*🜸 Link:* ${data.EnlaceYoutube}`
+      }, { quoted: info });
+
+      await sock.sendMessage(from, {
+        video: { url: `${data.EnlaceDescarga}&apikey=${NAUFRA_KEY}` }, // 🔑 Agregar key también aquí
+        mimetype: 'video/mp4',
+        caption: data.Titulo
+      }, { quoted: info });
+
+      return;
+    }
+
+    // SI YTINFO FALLA → DESCARGA IGUAL
+    const videoURL =
+      `${APINAUFRA}/ytmp4?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
+
+    await sock.sendMessage(from, {
+      video: { url: videoURL },
+      mimetype: 'video/mp4',
+      caption: q
+    }, { quoted: info });
+
+  } catch (e) {
+
+    console.log("ERROR PLAYVIDEO:", e);
+
+    enviar('❌ Error descargando video');
+
+  }
+
+}
+break;
+
+case 'playdoc': {
+if(!isReg) return enviar(respuesta.registro)
+if (!q)
+return enviar('❌ Escribe un nombre o link de YouTube');
+
+
+
+try {
+
+const apiURL =
+`${APINAUFRA}/ytinfo?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
+
+const apiData = await fetchJson(apiURL);
+
+// SI YTINFO FUNCIONA
+if (apiData && apiData.Estado === "online") {
+
+const data = apiData.Resultado;
+
+await sock.sendMessage(from, {
+image: { url: data.Miniatura },
+caption: `「✪」 *${data.Titulo}*
+
+*ⴵ Duración:* ${data.Duracion}
+*✐ Canal:* ${data.Canal.Nombre}
+*👁 Vistas:* ${data.Visualizaciones}
+*🜸 Link:* ${data.EnlaceYoutube}
+`
+}, { quoted: info });
+
+
+await sock.sendMessage(from, {
+document: { url: `${data.EnlaceDescarga}&apikey=${NAUFRA_KEY}` },
+mimetype: 'video/mp4',
+fileName: `${data.Titulo}.mp4`
+}, { quoted: info });
+
+return;
+}
+
+
+// SI YTINFO FALLA → DESCARGA IGUAL
+const videoURL =
+`${APINAUFRA}/ytmp4?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
+
+await sock.sendMessage(from, {
+document: { url: videoURL },
+mimetype: 'video/mp4',
+fileName: `video.mp4`
+}, { quoted: info });
+
+} catch (e) {
+
+console.log("ERROR MP4DOC:", e);
+
+enviar('❌ Error enviando documento');
+
+}
+
+}
+break;
+
+case 'play': {
+if(!isReg) return enviar(respuesta.registro)
+if (!q) return enviar('❌ Escribe un nombre o link de YouTube')
+
+try {
+
+let query = encodeURIComponent(q.trim())
+
+// INFO DEL VIDEO
+let apiURL = `${APINAUFRA}/ytinfo?apikey=${NAUFRA_KEY}&url=${query}`
+
+let apiData = await fetchJson(apiURL)
+
+// SI LA API RESPONDE BIEN
+if (apiData && apiData.Estado === "online" && apiData.Resultado) {
+
+let data = apiData.Resultado
+
+await sock.sendMessage(from, {
+image: { url: data.Miniatura },
+caption: `「✪」 *${data.Titulo}*
+
+*ⴵ Duración:* ${data.Duracion}
+*✐ Canal:* ${data.Canal.Nombre}
+*👁 Vistas:* ${data.Visualizaciones}
+*🜸 Link:* ${data.EnlaceYoutube}
+
+*📥 Descargando audio...*`
+}, { quoted: info })
+
+// AUDIO
+await sock.sendMessage(from, {
+audio: {
+url: `${APINAUFRA}/ytmp3?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(data.EnlaceYoutube)}`
+},
+mimetype: 'audio/mpeg',
+ptt: false
+}, { quoted: info })
+
+return
+
+}
+
+
+// SI FALLA YTINFO → DESCARGA DIRECTO
+let audioURL = `${APINAUFRA}/ytmp3?apikey=${NAUFRA_KEY}&url=${query}`
+
+await sock.sendMessage(from, {
+audio: { url: audioURL },
+mimetype: 'audio/mpeg',
+ptt: false
+}, { quoted: info })
+
+
+} catch (e) {
+
+console.log("ERROR PLAY:", e)
+
+enviar('❌ Error descargando música')
+
+}
+
+}
+break
+
+
+
+
+
+case 'fb':
+case 'facebook': {
+if(!isReg) return enviar(respuesta.registro)
+    if (!q)
+        return enviar('❌ Escribe un link de Facebook');
+
+    
+
     try {
-        // Realizar la solicitud a la nueva API
-        const response = await axios.get(`https://api.bronxyshost.com.br/api-bronxys/pesquisa_ytb`, {
-            params: {
-                nome: q,
-                apikey: API_KEY_NAUFRA
-            }
-        });
-        const data = response.data;
 
-        // Verificar si el video es demasiado largo
-        if (data[0]?.tempo?.length >= 7) return enviar("Lo siento, este video o audio es demasiado largo, no puedo realizar esta solicitud. Pide otra canción de menos de una hora.");
+      
+        // URL de descarga directa (no JSON)
+        const videoURL = `${APINAUFRA}/fbvideo?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
 
-        // Crear el mensaje de respuesta
-        const N_E = " No encontrado.";
-        const caption = `
-        ▧⃯⃟📝• 𝐓𝐢𝐭𝐮𝐥𝐨: ${data[0]?.titulo || N_E}
-        ▧⃯⃟⏱️• 𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧: ${data[0]?.tempo || N_E}
-        ▧⃯⃟🎚• 𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨: ${data[0]?.postado || N_E}
-        ▧⃯⃟🛠• 𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐜𝐢𝐨𝐧: ${data[0]?.desc || N_E}
+        // Enviar video directamente al bot
+        await sock.sendMessage(from, {
+            video: { url: videoURL },
+            mimetype: 'video/mp4',
+            caption: `*🎬 Video de Facebook*\n${q}`
+        }, { quoted: info });
 
-        ■■■■■ 100% 
+    } catch (e) {
+        console.log("ERROR FBVIDEO:", e);
+        enviar('❌ Error descargando video de Facebook');
+    }
 
-        εรρε૨ε µɳ ρσ૮σ...
+}
+break;
 
-        Si deseas descargar el video, usa !playvideo ${q.trim()}
-        `;
 
-        // Enviar la imagen con la información del video
-        await sock.sendMessage(from, {image: {url: data[0]?.thumb || logoslink?.logo}, caption: caption}, {quoted: info});
+case 'tiktok': {
+if(!isReg) return enviar(respuesta.registro)
+    if (!q)
+        return enviar('❌ Escribe un link de TikTok');
+
+    try {
+
+        // API key del usuario (puedes sacarla de tu DB si quieres dinámico)
         
-        // Enviar el audio
-        await sock.sendMessage(from, {audio: {url: `https://api.bronxyshost.com.br/api-bronxys/play?nome_url=${q}&apikey=${API_KEY_NAUFRA}`}, mimetype: "audio/mpeg", fileName: data[0]?.titulo || "play.mp3"}, {quoted: info}).catch(e => {
-            return enviar("Error...");
+        // Endpoint directo de descarga TikTok
+        const videoURL = `${APINAUFRA}/tiktok?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
+
+        // Opcional: miniatura y título con un endpoint /ttinfo
+        // Por simplicidad aquí solo enviamos el video directamente
+        await sock.sendMessage(from, {
+            video: { url: videoURL },
+            mimetype: 'video/mp4',
+            caption: `*🎬 Video de TikTok*\n${q}`
+        }, { quoted: info });
+
+    } catch (e) {
+        console.log("ERROR TIKTOK:", e);
+        enviar('❌ Error descargando video de TikTok');
+    }
+
+}
+break;
+
+
+case 'mediafire': {
+if(!isReg) return enviar(respuesta.registro)
+    if (!q) return enviar('❌ Envia un link de MediaFire');
+
+    enviar("📥 Descargando archivo...");
+
+    try {
+
+        const axios = require("axios");
+
+        const apiURL = `${APINAUFRA}/mediafire-dl?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+        const response = await axios.get(apiURL, {
+            responseType: 'arraybuffer'
         });
+
+        // Obtener nombre desde header
+        let fileName = "archivo";
+
+        const disposition = response.headers['content-disposition'];
+
+        if (disposition && disposition.includes("filename=")) {
+            fileName = disposition
+                .split("filename=")[1]
+                .replace(/"/g, "")
+                .trim();
+        }
+
+        const mimeType = response.headers['content-type'] || 'application/octet-stream';
+
+        await sock.sendMessage(from, {
+            document: Buffer.from(response.data),
+            mimetype: mimeType,
+            fileName: fileName
+        }, { quoted: info });
 
     } catch (e) {
         console.log(e);
-        return enviar("No se pudo encontrar con tan poca información... / Error");
+        enviar('❌ Error descargando archivo');
     }
+
+}
 break;
 
+case 'instagram': {
+if(!isReg) return enviar(respuesta.registro)
+    if (!q)
+        return enviar('❌ Escribe un link de Instagram');
 
-//nesecitas api
-case 'playvideo': case 'pvid': case 'playmp4': 
-
-{
     try {
-        if (!q.trim()) return enviar(`- Ejemplo: !play nombre de la música\nLa música será descargada, solo debes elegir audio o video. Si no se descarga, es posible que YouTube haya restringido la descarga o haya algún otro problema.`);
-        
-        // Llamada a la nueva API del vendedor para buscar el video
-        let data = await fetchJson(`https://api.bronxyshost.com.br/api-bronxys/pesquisa_ytb?nome=${q}&apikey=${API_KEY_NAUFRA}`);
-        
-        if (data[0]?.tempo?.length >= 7) return enviar("Lo siento, este video o audio es demasiado largo. No puedo procesar esta solicitud. Por favor, elige otra música que dure menos de una hora.");
+        // Endpoint directo de descarga Instagram
+        const videoURL = `${APINAUFRA}/instagram?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(q.trim())}`;
 
-        var N_E = " No encontrado.";
-        var bla = `
-🎙️⃤𝐓𝐢𝐭𝐮𝐥𝐨: ${data[0]?.titulo || N_E}
-⏰⃤𝐃𝐮𝐫𝐚𝐜𝐢𝐨𝐧: ${data[0]?.tempo || N_E}
-📹⃤𝐏𝐮𝐛𝐥𝐢𝐜𝐚𝐝𝐨: ${data[0]?.postado || N_E}
-🗞️⃤𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐜𝐢𝐨𝐧: ${data[0]?.desc || N_E}
-
-■■■■■ 100% 
-
-Espere un poco...
-
-Si deseas descargar el audio, usa !play ${q.trim()}
-        `;
-        
-        // Enviar información sobre el video al usuario
-        sock.sendMessage(from, {image: {url: data[0]?.thumb || logoslink?.logo}, caption: bla}, {quoted: info});
-        
-        // Enviar el video al usuario
-        sock.sendMessage(from, {
-            video: {url: `https://api.bronxyshost.com.br/api-bronxys/play_video?nome_url=${q}&apikey=${API_KEY_NAUFRA}`},
-            mimetype: "video/mp4",
-            fileName: data[0]?.titulo || "play.mp4"
-        }, {quoted: info}).catch(e => {
-            return enviar("Error al intentar descargar el video.");
-        });
+        // Enviar video directamente al bot
+        await sock.sendMessage(from, {
+            video: { url: videoURL },
+            mimetype: 'video/mp4',
+            caption: `*🎬 Video de Instagram*\n${q}`
+        }, { quoted: info });
 
     } catch (e) {
-        console.log(e);
-        return enviar("No se pudo encontrar el contenido con la información proporcionada o hubo un error en la solicitud.");
+        console.log("ERROR INSTAGRAM:", e);
+        enviar('❌ Error descargando video de Instagram');
     }
-}
-break;
 
-
-
-//nesecitas api      
-case 'tiktokvideo':
-try {
-    if(!q) return enviar('Por favor, proporciona un enlace de TikTok válido.');
-    
-    enviar("Procesando el video...");
-    
-    // Realiza la solicitud a la API
-    let response = await fetch(`https://api.bronxyshost.com.br/api-bronxys/tiktok?url=${q}&apikey=${API_KEY_NAUFRA}`);
-    
-    // Verifica si la respuesta es JSON válida
-    let contentType = response.headers.get("content-type");
-    
-    if(contentType && contentType.includes("application/json")) {
-        // Procesa la respuesta como JSON
-        let ABC = await response.json();
-        enviar("No se pudo descargar el video. Por favor, intenta nuevamente.");
-    } else {
-        // Procesa la respuesta como un archivo binario
-        let buffer = await response.buffer();
-        sock.sendMessage(from, { video: buffer, mimetype: 'video/mp4' }, { quoted: info });
-    }
-} catch (e) {
-    enviar("Ocurrió un error al intentar descargar el video.");
-}
-break;
-
-
-
-//nesecitas api
-case 'tiktokaudio':
-try {
-if(!q.includes("tiktok")) return enviar(`!tiktokaudio link de Tiktok`);
-enviar("Realizando acción..");
-sock.sendMessage(from, {audio: {url:`https://api.bronxyshost.com.br/api-bronxys/tiktok?url=${q}&apikey=${API_KEY_NAUFRA}`}, mimetype: "audio/mpeg"}, {quoted: info}).catch(e => {
-console.log(e)
-return enviar("Error..")
-})
-} catch (e) {
-console.log(e)
-return enviar("Error...");
 }
 break;
 
 
 //nesecitas api
-case 'buscarapk': 
-; // Verificación si el usuario es premium
-if (!q.trim()) return enviar(`Ejemplo: !buscarapk WhatsApp`); // Asegurarse de que haya una búsqueda
+case 'pinterest':
+case 'pin': {
+if(!isReg) return enviar(respuesta.registro)
+  if (!q)
+    return enviar('❌ Escribe qué quieres buscar');
 
-try {
-    enviar('Espera un momento estoy enviando'); // Mensaje de espera
-    let abc = await fetchJson(`https://api.bronxyshost.com.br/api-bronxys/aptoide_pesquisa?pesquisa=${q.trim()}&apikey=${API_KEY_NAUFRA}`); // Llamada a la API
-    enviar(abc.aptoide || 'No se encontró ninguna información.'); // Respuesta con la información o mensaje de error
-} catch (e) {
-    console.log(e);
-    return enviar(mess.error()); // Mensaje de error en caso de fallo
+  try {
+
+    const apiURL =
+      `${APINAUFRA}/pinterest-search?apikey=${NAUFRA_KEY}&q=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+    await sock.sendMessage(from, {
+      image: { url: apiURL },
+      caption: `*📌 Resultado para:* ${q}`
+    }, { quoted: info });
+
+  } catch (e) {
+
+    console.log("ERROR PINTEREST:", e);
+    enviar('❌ Error buscando la imagen');
+
+  }
+
 }
 break;
 
-//nesecitas api
+case 'horoscopo':
+case 'horóscopo': {
 
-case "descargarapk":
-;
-if (!q.trim().includes("aptoide.com")) return enviar(`Ejemplo: !descargarapk link de la aplicación\n\nUse el comando !buscarapk Ejemplo: whatsapp, y usted recibirá una url, pegue la url despues del comando para descargarla.`);
-enviar('Espera un momento estoy enviando tu apk');
-try {
-    abc = await fetchJson(`https://api.bronxyshost.com.br/api-bronxys/aptoide?url=${q.trim()}&apikey=${API_KEY_NAUFRA}`);
-    sock.sendMessage(from, {
-        document: { url: abc.link },
-        mimetype: "application/vnd.android.package-archive",
-        fileName: abc.titulo
-    }, { quoted: info }).catch((e) => console.log(e));
-} catch (e) {
-    console.log(e);
-    return enviar("Error...");
+  if (!q) return enviar('❌ Escribe tu signo zodiacal.\nEjemplo: .horoscopo aries');
+
+  const signo = q.toLowerCase().trim();
+
+  enviar("🔮 Consultando tu horóscopo del día...");
+
+  try {
+    
+
+    const apiURL = `${APINAUFRA}/horoscopo?apikey=${NAUFRA_KEY}&signo=${encodeURIComponent(signo)}&t=${Date.now()}`;
+
+    const data = await fetchJson(apiURL);
+
+    const mensaje = 
+`🔮 *Horóscopo de ${data.signo.toUpperCase()}*
+📅 ${data.fecha}
+
+${data.descripcion}
+
+✨ ¡Que tengas un excelente día!`;
+
+    await sock.sendMessage(from, { text: mensaje }, { quoted: info });
+
+  } catch (e) {
+    console.log("ERROR HOROSCOPO:", e);
+    enviar('❌ No pude obtener el horóscopo. Verifica el signo.');
+  }
+
+}
+break;
+  
+  
+case 'wikipedia':
+case 'wiki': {
+if(!isReg) return enviar(respuesta.registro)
+  if (!q) return enviar('❌ Escribe qué quieres buscar');
+
+  
+  try {
+    
+    // En la misma VPS
+    const apiURL = `${APINAUFRA}/wikipedia?apikey=${NAUFRA_KEY}&q=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+    const data = await fetchJson(apiURL);
+
+    const mensaje = `📚 *${data.titulo}*\n${data.descripcion}\n🔗 ${data.enlace}`;
+await sock.sendMessage(from, { text: mensaje }, { quoted: info });
+
+  } catch (e) {
+    console.log("ERROR WIKI:", e);
+    enviar('❌ Error buscando en Wikipedia');
+  }
+
 }
 break;
 
 
+case 'google':
+case 'g': {
+if(!isReg) return enviar(respuesta.registro)
+  if (!q) return enviar('❌ Escribe qué quieres buscar en Google');
+
+  
+  try {
+    
+    const apiURL = `${APINAUFRA}/google?apikey=${NAUFRA_KEY}&q=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+    const data = await fetchJson(apiURL);
+
+    const mensaje = `🌐 *${data.titulo}*\n${data.descripcion}\n🔗 ${data.enlace}`;
+
+    await sock.sendMessage(from, {
+      text: mensaje
+    }, { quoted: info });
+
+  } catch (e) {
+    console.log("ERROR GOOGLE:", e);
+    enviar('❌ Error buscando en Google');
+  }
+}
+break;
+
+case 'simi': {
+if(!isReg) return enviar(respuesta.registro)
+try {
+
+  if (!q) return enviar('💬 Usa: /simi texto');
+
+
+  
+
+  const personalidad = encodeURIComponent(
+    "Responde en español como un bot sarcástico, con respuestas largas, un poco agresivo con malas palabras, sexualizado y divertido. Sé corto y con carácter. Usando muchas palabras sexuales y algo agresivas."
+  );
+
+  const texto = encodeURIComponent(q);
+
+  const apiURL = `${APINAUFRA}/chat?apikey=${NAUFRA_KEY}&prompt=${personalidad}%20Pregunta:%20${texto}&t=${Date.now()}`;
+
+  const data = await fetchJson(apiURL);
+
+  if (!data || !data.respuesta) {
+    return enviar('❌ Simi no respondió.');
+  }
+
+  const msg = `
+'💬 ${data.respuesta}
+`.trim();
+
+  enviar(msg);
+
+} catch (e) {
+  console.log(e);
+  enviar('❌ Error con Simi.');
+}
+}
+break;
+
+
+
+case 'descargarapk':
+case 'apk': {
+if(!isReg) return enviar(respuesta.registro)
+  if (!q)
+    return enviar('❌ Escribe el nombre de la aplicación\nEjemplo: .apk whatsapp');
+
+  try {
+
+    // 🔎 1️⃣ Buscar app
+    const searchURL =
+      `${APINAUFRA}/aptoide-search?apikey=${NAUFRA_KEY}&q=${encodeURIComponent(q)}&t=${Date.now()}`;
+
+    const search = await fetchJson(searchURL);
+
+    if (!search.resultado || search.resultado.length === 0)
+      return enviar('❌ No se encontró la aplicación');
+
+    const app = search.resultado[0];
+
+    enviar(`*⇓ Descargando:* ${app.nombre}\n⏳ Espera un momento...`);
+
+    // ⬇ 2️⃣ Descargar usando el package
+    const downloadURL =
+      `${APINAUFRA}/aptoide-download?apikey=${NAUFRA_KEY}&package=${app.paquete}&t=${Date.now()}`;
+
+    await sock.sendMessage(from, {
+      document: { url: downloadURL },
+      mimetype: "application/vnd.android.package-archive",
+      fileName: `${app.nombre}.apk`,
+      caption:
+`📦 *${app.nombre}*
+*✰ Rating:* ${app.rating}
+*⇓ Descargas:* ${app.descargas}
+*❒ Tamaño:* ${app.tamaño}
+*❂ Versión:* ${app.version}`
+    }, { quoted: info });
+
+  } catch (e) {
+
+    console.log("ERROR APK PRO:", e);
+    enviar('❌ Error descargando la aplicación');
+
+  }
+
+}
+break;
 
 //Parejas
 
