@@ -9,7 +9,7 @@
 
 ---
 
-## 🧠 **¿Qué es NaufraBot V2?**
+## 🧠 **¿Qué es NaufraBot V3?**
 
 🔥 **NaufraBot V3** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 en cualquier servidor y completamente gratuito en termux, con **más comandos, rendimiento y estabilidad**.
 
