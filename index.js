@@ -1098,7 +1098,7 @@ case 'modoadmin': {
 
   const estado = args[0]; // puede ser "1" o "0"
 
-  if (!estado) return enviar("🧩 Usa el comando correctamente:\n\n*modoadmin 1* → Activar modo admin\n*modoadmin 0* → Desactivar modo admin");
+  if (!estado) return enviar(" Usa el comando correctamente:\n\n*modoadmin 1* → Activar modo admin\n*modoadmin 0* → Desactivar modo admin");
 
   if (estado === "1") {
     if (!modoAdmin.includes(from)) {
@@ -1249,12 +1249,12 @@ if(boij2){
 enviar(`Creando tu sticker supere un poco ❤️`)
 var pack = `
 👑 Dueño 👑
- ✅Naufra
+ ✅ Moisés 
 ⭐𝐂𝐫𝐞𝐚𝐝𝐨 𝐩𝐨𝐫 :
  ${pushname} `
 var author2 = ` 
 🤖 𝐁𝐨𝐭 🤖
- ⃟NaufraBot
+ ⃟CatrinaBot
 💐 𝐆𝐫𝐮𝐩𝐨💐
 ${groupName} `
 owgi = await getFileBuffer(boij2, 'image')
@@ -1266,12 +1266,12 @@ await delkoin(sender,1)
 enviar(`Creando tu Sticker ${pushname}`)
 var pack = `
 👑 Dueño 👑
- ✅Naufra
+ ✅ Moisés 
 ⭐𝐂𝐫𝐞𝐚𝐝𝐨 𝐩𝐨𝐫 :
  ${pushname} `
 var author2 = ` 
 🤖 𝐁𝐨𝐭 🤖
- ⃟NaufraBot
+ ⃟CatrinaBot
 💐 𝐆𝐫𝐮𝐩𝐨💐
 ${groupName} `
 owgi = await getFileBuffer(boij, 'video')
