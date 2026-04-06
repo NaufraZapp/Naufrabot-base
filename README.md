@@ -38,11 +38,11 @@ termux-setup-storage
 ```
 
 ```bash
-cd /sdcard && git clone https://github.com/NaufraZapp/Naufrabot-base
+cd /sdcard && git clone https://github.com/andreslopez711913-art/Catrinabot-base
 ```
 
 ```bash
-cd Naufrabot-base
+cd catrinabot-base
 ```
 
 ```bash
