@@ -57,4 +57,4 @@ node index
 
 [![YouTube](https://img.shields.io/badge/Canal_de_Youtube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@MoisesGomez-j2o)
 
-[![TikTok](https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://www.tiktok.com/@naufraofficial?_t=ZS-90ePBQwysYj&_r=1)
+[![TikTok](https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://www.tiktok.com/@vivianpasg?_r=1&_t=ZS-95WAzxeGtkq)
