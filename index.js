@@ -1,6 +1,6 @@
-//Base 100% Editable creditos a Naufrabot 
+//Base 100% Editable creditos a catrinabot 
 
-//Página oficial naufrabot.com
+//canal oficial https://www.youtube.com/@MoisesGomez-j2o
 
 //Sígueme en todas mis redes para estar informados con las novedades de la base 
 
@@ -27,7 +27,7 @@ const util = require("util")
 const speed = require("performance-now");
 const mimetype = require('mime-types')
 const { exec, spawn, execSync } = require("child_process")
-let phoneNumber = "5199999999"; // cambiar número
+let phoneNumber = "+593968251485"; // cambiar número
 const axios = require("axios")
  const ffmpeg = require('fluent-ffmpeg')
  
@@ -36,7 +36,7 @@ const chalk = require('chalk')
 const color = (text, color) => { return !color ? chalk.green(text) : chalk.keyword(color)(text) };
  
  //baner
-const banner = cfonts.render("Naufra| Bot| Base", {
+const banner = cfonts.render("Catrina| Bot| Base", {
   font: 'pallet',
   align: 'center',
   gradient: ["green","blue"]
@@ -75,7 +75,7 @@ const Cuestions = JSON.parse(fs.readFileSync('./Games/Json/cuestions.json'))
               
    // 𝚃𝙸𝙼𝙴
 const moment = require("moment-timezone") 
-const time = moment.tz('America/Lima').format('DD/MM HH:mm:ss')
+const time = moment.tz('America/Guayaquil').format('DD/MM HH:mm:ss')
 const horap = moment().format('HH')
 var timeFt ='𝘽𝙪𝙚𝙣𝙖𝙨 🙋'
 if (horap >= '01' && horap <= '05') {
@@ -93,7 +93,7 @@ if (horap >= '01' && horap <= '05') {
  //Configuraciones 
 var { creador, owner, Bot, JpgBot, NAUFRA_KEY } = require("./settings/settings.json");        
 const prefixo = ['#','/','•','.','!','?','*']// @ Prefijos
-const APINAUFRA = 'https://api.naufrabot.com'
+const APIMoises = 'https://api.Catrinabot.com'
 
 
 
@@ -115,7 +115,7 @@ return admins
 async function startProo() {
   console.clear();
   console.log(banner.string);
-  console.log(chalk.cyanBright("🔥 NaufraBot Base"));
+  console.log(chalk.cyanBright("😘 CatrinaBot Base"));
 
   // Estado de sesión
   const { state, saveCreds } = await useMultiFileAuthState("./session");
@@ -213,7 +213,7 @@ const sol = `
 `
 
 await sock.sendMessage(anu.id, {
-  image: { url: "https://i.ibb.co/HDf3hw9J/20250702-214923.jpg" },
+  image: { url: "https://i.postimg.cc/Kz4vW6JM/dreamina-2025-11-18-7857-A-super-wide-promotional-poster-abstrac.jpg" },
   caption: sol,
   mentions: [num]  // 👈 Aquí haces la mención real
 })
@@ -227,7 +227,7 @@ if (anu.action == 'promote') {
 
 🪪 𝗡𝗼𝗺𝗯𝗿𝗲: @${num.split('@')[0]}
 🌐 𝗚𝗿𝘂𝗽𝗼: ${metadata.subject}
-💌 「 ¡Enhorabuena! 🎉 Has ascendido a la mesa de los administradores 🪄 」
+💌 「 ¡En hora buena! 🎉 Has ascendido a la mesa de los administradores 🪄 」
 
 ✦━─┈༓༒༓┈─━✦
 `
@@ -317,7 +317,7 @@ function esAdminFlexible(sock, listaDeAdmins = []) {
   if (!sock?.authState?.creds?.me) return false;
 
   const botId = sock.authState.creds.me.id;   // ej: 51916525000:26@lid
-  const botLid = sock.authState.creds.me.lid; // ej: 51916525000@lid
+  const botLid = sock.authState.creds.me.lid; // ej: +5939998355000@lid
 
   const clean = (jid) => jid?.split(':')[0]; // elimina el ":26" si existe
 
@@ -336,7 +336,7 @@ function esAdminFlexible(sock, listaDeAdmins = []) {
 
 const isUrl = (url) => { return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/, 'gi')) }
 const deviceType = info.key.id.length > 21 ? 'Android' : info.key.id.substring(0, 2) == '3A' ? 'IPhone' : 'WhatsApp web'
-const options = { timeZone: 'America/Lima', hour12: false }
+const options = { timeZone: 'America/Guayaquil', hour12: false }
 const data = new Date().toLocaleDateString('PE', { ...options, day: '2-digit', month: '2-digit', year: '2-digit' })
 const hora = new Date().toLocaleTimeString('PE', options) 
 
@@ -514,7 +514,7 @@ const runtime = function(seconds) {
   registro: `
 ╔════◇◆◇════╗
 💬 ❝ 𝑷𝒓𝒊𝒎𝒆𝒓𝒐 𝒅𝒆𝒃𝒆𝒔 𝒓𝒆𝒈𝒊𝒔𝒕𝒓𝒂𝒓𝒕𝒆 🤔 ¡𝑬𝒔 𝒇𝒂𝒄𝒊𝒍! 😄 ❞
-💬 ❝ 𝑬𝒔𝒄𝒓𝒊𝒃𝒆:  .𝒓𝒆𝒈 ❞
+💬 ❝ 𝑬𝒔𝒄𝒓𝒊𝒃𝒆:  .𝒓𝒆𝒈 Anuel AA.25❞
 ╚════◇◆◇════╝
 `,
 
@@ -606,13 +606,13 @@ switch(comando) {
 
 
 case 'prueba':
-enviar(`Este es un comando de prueba 🌟🌟
+enviar(`Este es un comando de prueba 😎👌 
 
 ......`);
 break
 
 case 'comando2':
-enviar(`🧩Este es un comando nuevo`);
+enviar(`Este es un comando nuevo`);
 break
 //Comandos owner
 
@@ -640,7 +640,7 @@ enviar(`🔑 *INFORMACIÓN DE API*
 
 ⚡ Restantes: ${data.restantes}
 
-🌐 API: api.naufrabot.com`);
+🌐 API: api.catrinabot.com`);
 
 }catch(e){
 
@@ -874,7 +874,7 @@ Ahí encontrarás guías para:
 ✔ Configurar APIs
 ✔ Crear nuevos sistemas
 
-🚀 *NAUFRABOT BASE es totalmente personalizable.*
+🚀 *CATRINABOT BASE es totalmente personalizable.*
 
 ¡Haz tu propia versión del bot!`
 
@@ -925,9 +925,9 @@ Después de eso los comandos funcionarán correctamente.
 ✔ Soporte continuo  
 
 🌐 Web oficial:
-https://api.naufrabot.com
+https://api.Catrinabot.com
 
-🚀 *Potencia tu bot con la API oficial de Naufrabot.*`
+🚀 *Potencia tu bot con la API oficial de Catrinabot.*`
 
 await sock.sendMessage(from,{ text: texto },{ quoted: info })
 
@@ -936,7 +936,7 @@ break
 
 
 case 'grupos':
-enviar(`🧩 𝙂𝙍𝙐𝙋𝙊 𝙊𝙁𝙄𝘾𝙄𝘼𝙇 𝙋𝘼𝙍𝘼 𝙐𝙎𝘼𝙍 𝙐𝙉 𝘽𝙊𝙏 𝘼𝘾𝙏𝙄𝙑𝙊 24/7 👇
+enviar(` 𝙂𝙍𝙐𝙋𝙊 𝙊𝙁𝙄𝘾𝙄𝘼𝙇 𝙋𝘼𝙍𝘼 𝙐𝙎𝘼𝙍 𝙐𝙉 𝘽𝙊𝙏 𝘼𝘾𝙏𝙄𝙑𝙊 24/7 👇
 
 ➫https://chat.whatsapp.com/Jd7WKQBsAhkCG4k1SPxK7r?mode=ac_t`);
 break
@@ -945,7 +945,7 @@ case 'serdueño':
 case 'sercreador':
 case 'owner':
 case 'serowner':
-enviar(`*🧩 Mira el siguiente vídeo donde te enseño cómo convertirte en dueño del bot y usar los comandos de owner 👇*
+enviar(`*😎👌 Mira el siguiente vídeo donde te enseño cómo convertirte en dueño del bot y usar los comandos de owner 👇*
 
 ➫https://youtu.be/LugjBfJEoiQ?si=Z-qaGhjNdC-p3fGS`);
 break
@@ -1098,7 +1098,7 @@ case 'modoadmin': {
 
   const estado = args[0]; // puede ser "1" o "0"
 
-  if (!estado) return enviar("🧩 Usa el comando correctamente:\n\n*modoadmin 1* → Activar modo admin\n*modoadmin 0* → Desactivar modo admin");
+  if (!estado) return enviar(" Usa el comando correctamente:\n\n*modoadmin 1* → Activar modo admin\n*modoadmin 0* → Desactivar modo admin");
 
   if (estado === "1") {
     if (!modoAdmin.includes(from)) {
@@ -1249,12 +1249,12 @@ if(boij2){
 enviar(`Creando tu sticker supere un poco ❤️`)
 var pack = `
 👑 Dueño 👑
- ✅Naufra
+ ✅ Moisés 
 ⭐𝐂𝐫𝐞𝐚𝐝𝐨 𝐩𝐨𝐫 :
  ${pushname} `
 var author2 = ` 
 🤖 𝐁𝐨𝐭 🤖
- ⃟NaufraBot
+ ⃟CatrinaBot
 💐 𝐆𝐫𝐮𝐩𝐨💐
 ${groupName} `
 owgi = await getFileBuffer(boij2, 'image')
@@ -1266,12 +1266,12 @@ await delkoin(sender,1)
 enviar(`Creando tu Sticker ${pushname}`)
 var pack = `
 👑 Dueño 👑
- ✅Naufra
+ ✅ Moisés 
 ⭐𝐂𝐫𝐞𝐚𝐝𝐨 𝐩𝐨𝐫 :
  ${pushname} `
 var author2 = ` 
 🤖 𝐁𝐨𝐭 🤖
- ⃟NaufraBot
+ ⃟CatrinaBot
 💐 𝐆𝐫𝐮𝐩𝐨💐
 ${groupName} `
 owgi = await getFileBuffer(boij, 'video')

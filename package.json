@@ -1,7 +1,7 @@
 {
-  "name": "naufraBase",
+  "name": "catrina-base",
   "version": "1.0.0",
-  "description": "Base creada desde cero y 100% midificable.",
+  "description": "Base creada desde cero y 100% modificable.",
   "main": "index.js",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
@@ -32,6 +32,6 @@
     "qs": "^6.14.0",
     "request": "^2.88.2"
   },
-  "author": "Naufra",
+  "author": "Moisés",
   "license": "ISC"
 }
