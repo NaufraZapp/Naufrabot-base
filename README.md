@@ -48,7 +48,7 @@ cd Naufrabot-base
 ```
 
 ```bash
-node index
+npm start
 ```
 
 # 🔥INSTALACIÓN POR CLOUD SHELL.
