@@ -1,17 +1,17 @@
 <h1 align="center">
-✨🚀 <span style="color:#00FFAA;">NaufraBot V4</span> 🤖💚
+✨🚀 <span style="color:#00FFAA;">NaufraBot V5</span> 🤖💚
 </h1>
 
 <p align="center">
-  <img src="https://i.postimg.cc/pVDhsq2F/1000412618.jpg" width="300" alt="NaufraBot V4" />
+  <img src="[https://i.postimg.cc/pVDhsq2F/1000412618.jpg](https://i.postimg.cc/rzXqHmYQ/20260823-215152.jpg)" width="300" alt="NaufraBot V5" />
 </p>
 
 
 ---
 
-## 🧠 **¿Qué es NaufraBot V4?**
+## 🧠 **¿Qué es NaufraBot V5?**
 
-🔥 **NaufraBot V4** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 en cualquier servidor y completamente gratuito en termux, con **más comandos, rendimiento y estabilidad**.
+🔥 **NaufraBot V5** es una versión mejorada del clásico bot de WhatsApp, totalmente optimizado para funcionar 24/7 en cualquier servidor y completamente gratuito en termux, con **más comandos, rendimiento y estabilidad**.
 
 - 🚀 Compatible con la última versión de **Baileys**
 - 💬 Juegos RPG integrados
