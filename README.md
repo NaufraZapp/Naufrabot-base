@@ -51,6 +51,25 @@ cd Naufrabot-base
 node index
 ```
 
+# 🔥INSTALACIÓN POR CLOUD SHELL.
+* Instala el Cloud shell [aqui](https://www.mediafire.com/file/bp2l6cci2p30hjv/Cloud+Shell_1.apk/file)
+
+> [!NOTE]
+> Copia los códigos uno por uno, no los pegues todos juntos a la vez. 👁️  
+> Algunos comandos como las descargas necesitan una clave API para poder funcionar.  
+> Puedes adquirir tu clave en nuestra página oficial:  
+> 👉 [https://api.naufrabot.com](https://api.naufrabot.com)
+
+```bash
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install -y git ffmpeg tesseract-ocr wget && cd ~
+git clone https://github.com/NaufraZapp/Naufrabot-base && cd Naufrabot-base
+```
+
+```bash
+npm start
+```
+
 # 💥CONTÁCTAME💥
 
 [![WhatsApp](https://img.shields.io/badge/mi_numero-00802f?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/51927339074) <img src="https://raw.githubusercontent.com/Bots-WhatsApp-OFC/Bots-WhatsApp-OFC/master/accesos/iconos/whatsapp.gif" width="30">
