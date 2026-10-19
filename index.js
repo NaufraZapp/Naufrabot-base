@@ -286,9 +286,12 @@ enviar(`${sla} Número existente en WhatsApp con  id: ${result.jid}`)
     
 // Constantes is
  const isGroup = info.key.remoteJid.endsWith('@g.us')
-const sender = isGroup
-  ? (info.key.participantPn || info.key.participant)
-  : (info.key.senderPn || from)
+// ✅ V6: en los mensajes que manda el propio bot, Baileys 7 a veces deja el
+// participante vacío (null) y eso daba "Cannot read properties of null (reading 'split')".
+const sender = (isGroup
+  ? (info.key.participantPn || info.key.participant || info.participant)
+  : (info.key.senderPn || from))
+  || (info.key.fromMe ? (Naufra.user.id.split(':')[0] + '@s.whatsapp.net') : from)
 let groupMetadata = null;
 
 if (isGroup) {
@@ -1764,21 +1767,52 @@ case "attp6":
 if(!isReg) return enviar(respuesta.registro)
 if (!q) return enviar("Coloca un texto o emoji después del comando")
 
-try {
-
+{
 // ✅ V6: antes usaba "messagesC" (que incluía el prefijo, ej: "/attp") y la API fallaba
-let url = `${APINAUFRA}/api/${comando}?text=${encodeURIComponent(q)}&apikey=${NAUFRA_KEY}`
+const urlAttp = `${APINAUFRA}/api/${comando}?text=${encodeURIComponent(q)}&apikey=${NAUFRA_KEY}`
 
-let res = await fetch(url)
-let buffer = await res.buffer()
+// Descarga el sticker con axios y reintenta hasta 3 veces. Antes se usaba
+// node-fetch, que tira "Premature close" si la conexión se corta a la mitad
+// (pasa mucho en Termux con datos móviles o cuando la API tarda en generarlo).
+let bufAttp = null
+let errorApi = ''
+for (let intento = 1; intento <= 3 && !bufAttp; intento++) {
+  try {
+    const r = await axios.get(urlAttp, { responseType: 'arraybuffer', timeout: 60000 })
+    const tipo = String(r.headers['content-type'] || '')
+    if (tipo.includes('json') || tipo.includes('text')) {
+      // La API respondió con un mensaje (clave inválida, sin peticiones, etc.)
+      let j = {}
+      try { j = JSON.parse(Buffer.from(r.data).toString()) } catch { j = { mensaje: Buffer.from(r.data).toString().slice(0, 150) } }
+      errorApi = j.mensaje || j.message || j.error || j.msg || 'respuesta inválida'
+      break
+    }
+    bufAttp = Buffer.from(r.data)
+  } catch (e) {
+    if (e.response && e.response.status && e.response.status < 500) {
+      let j = {}
+      try { j = JSON.parse(Buffer.from(e.response.data).toString()) } catch {}
+      errorApi = j.mensaje || j.message || j.error || `código ${e.response.status}`
+      break
+    }
+    console.log(`⚠️ attp intento ${intento} falló:`, e.code || e.message)
+    if (intento < 3) await sleep(1500 * intento)
+  }
+}
 
-await Naufra.sendMessage(from, {
-sticker: buffer
-}, { quoted: info })
-
-} catch (e) {
-console.log(e)
-enviar("Error al crear sticker")
+if (bufAttp) {
+  await Naufra.sendMessage(from, { sticker: bufAttp }, { quoted: info })
+} else if (errorApi) {
+  enviar(`❌ La API respondió: *${errorApi}*\n\n🔑 Revisa tu clave con *${prefixo}miapi*`)
+} else {
+  // Último intento: que WhatsApp (Baileys) descargue el sticker por su cuenta
+  try {
+    await Naufra.sendMessage(from, { sticker: { url: urlAttp } }, { quoted: info })
+  } catch (e) {
+    console.log('❌ Error attp:', e.code || e.message)
+    enviar("❌ No se pudo crear el sticker, la API tardó demasiado. Intenta de nuevo en unos segundos.")
+  }
+}
 }
 
 break
