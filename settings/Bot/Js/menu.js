@@ -4,7 +4,9 @@ return `
 ╭══════════════════ 
 │✦ ➮ sᴏʏ: ${Bot}
 │✦ ➮ ᴘʀᴇғɪᴊᴏ ᴀᴄᴛᴜᴀʟ: *${prefixo}*
+│✦ ➮ ᴠᴇʀsɪᴏ́ɴ: *6.0* 🆕
 │✦ ➮ ᴘᴀɢɪɴᴀ ᴏғɪᴄɪᴀʟ:  https://naufrabot.com
+│✦ ➮ ᴀᴘɪ ᴏғɪᴄɪᴀʟ:  https://api.naufrabot.com
 ╰━━━━━─「✪」─━━━━━
 
 ➮☆ۣۜۜ͜͡ \`📂 ʟɪsᴛᴀ ᴅᴇ ᴄᴏᴍᴀɴᴅᴏs\` ꔷ㆒⸼݇҉ֻ᠂⃟✥    
@@ -38,10 +40,34 @@ return `
 > ➥La IA te explica qué hace cualquier otro comando
  
 ╭
+   ❍ 𝐌𝐄𝐍𝐔 𝐁𝐈𝐄𝐍𝐕𝐄𝐍𝐈𝐃𝐀𝐒 🆕  ❐
+╰
+*➢bienvenida 1/0*
+> ➥Activa/desactiva la bienvenida
+*➢despedida 1/0*
+> ➥Activa/desactiva la despedida
+*➢setbienvenida*
+> ➥Cambia el texto de bienvenida
+*➢setdespedida*
+> ➥Cambia el texto de despedida
+*➢setfotobienvenida*
+> ➥Pon tu imagen de bienvenida
+*➢setfotodespedida*
+> ➥Pon tu imagen de despedida
+*➢probarbienvenida*
+> ➥Mira cómo se ve la bienvenida
+*➢probardespedida*
+> ➥Mira cómo se ve la despedida
+*➢resetbienvenida*
+> ➥Vuelve al texto por defecto
+*➢avisosadmin 1/0*
+> ➥Avisa cuando alguien sube/baja de admin
+*➢configbienvenida*
+> ➥Mira la configuración del grupo
+
+╭
    ❍ 𝐌𝐄𝐍𝐔 𝐀𝐃𝐌𝐈𝐍  ❐
 ╰  
-*➢welcome 1/0*
-> ➥Activa/desactiva las bienvenidas y despedidas
 *➢antilink 1/0*      
 > ➥Activa/desactiva anti enlaces
 *➢modoadmin 1/0*
@@ -106,8 +132,37 @@ return `
 > ➥Convierte texto a sticker 
 *➢attp3*
 > ➥Convierte texto a sticker 
+*➢attp4 / attp5 / attp6* 🆕
+> ➥Más estilos de texto a sticker
+*➢buscarsticker* 🆕
+> ➥Busca stickers por nombre
 *➢Emojimix*           
 > ➥Mezcla emojis
+╭
+   ❍ 𝐌𝐄𝐍𝐔 𝐈𝐌𝐀𝐆𝐄𝐍 𝐄 𝐈𝐀 🆕  ❐
+╰
+*➢hd*
+> ➥Mejora una imagen a HD
+*➢removebg*
+> ➥Quita el fondo de una imagen
+*➢imagine*
+> ➥Crea imágenes con IA
+*➢llama*
+> ➥Pregúntale a Llama IA
+╭
+   ❍ 𝐌𝐄𝐍𝐔 𝐂𝐋𝐈𝐌𝐀 🆕  ❐
+╰
+*➢clima*
+> ➥Clima de cualquier ciudad
+*➢mareas*
+> ➥Estado del mar y mareas
+╭
+   ❍ 𝐌𝐄𝐍𝐔 𝐅𝐑𝐄𝐄 𝐅𝐈𝐑𝐄 🆕  ❐
+╰
+*➢perfilff*
+> ➥Perfil de Free Fire por UID
+*➢clanff*
+> ➥Información de un clan
 ╭  
    ❍ 𝐌𝐄𝐍𝐔 𝐇𝐄𝐑𝐑𝐀𝐌𝐈𝐄𝐍𝐓𝐀𝐒  ❐
 ╰   
@@ -133,8 +188,8 @@ return `
 ╭                    
    ❍ 𝐌𝐄𝐍𝐔 - 𝐄𝐂𝐎𝐍𝐎𝐌𝐈𝐀  ❐       
 ╰      
-*➢Nivel*
-> ➥Mira tu nivel
+*➢Nivel* 🆕
+> ➥Tu tarjeta de nivel con imagen
 *➢cartera*
 > ➥Revisa tu dinero 
 *➢reg*

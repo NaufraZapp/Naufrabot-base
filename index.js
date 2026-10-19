@@ -1,4 +1,4 @@
-//Base 100% Editable creditos a Naufrabot 
+//Base 100% Editable creditos a Naufrabot — VERSIÓN 6
 
 //Página oficial naufrabot.com
 
@@ -18,7 +18,8 @@
 //
 // 🎨 PERSONALIZACIÓN RÁPIDA (sin tocar código):
 //   - Nombre del bot, prefijo, foto de menú, dueño y API key -> editar settings/settings.json
-//   - Mensajes de bienvenida/despedida -> buscar el bloque "BIENVENIDA Y DESPEDIDA" más abajo
+//   - Mensajes de bienvenida/despedida -> settings/Grupo/Js/bienvenidas.js
+//     (o desde WhatsApp con /setbienvenida y /setdespedida, cada grupo el suyo)
 //
 // ✏️ CÓMO AGREGAR UN COMANDO NUEVO:
 //   Copia un bloque como el de "case 'prueba':" (más abajo), cámbiale el nombre y el texto.
@@ -85,9 +86,12 @@ const { checkCasino,checkAttp,checkEmoji,checkEve, addClaimTraga, checkClaimTrag
 const Menu = require ('./settings/Bot/Js/menu.js')
 
  //configurar ggrupos
-const welkom = JSON.parse(fs.readFileSync('./settings/Grupo/Json/welkom.json')) 
+// 👋 Bienvenidas y despedidas (V6: ahora separadas, ver settings/Grupo/Js/bienvenidas.js)
+const Bienvenidas = require('./settings/Grupo/Js/bienvenidas.js')
+// ☁️ Sube imágenes a internet para mandarlas a la API (hd, removebg...)
+const { subirImagen } = require('./fuction/settings/subirImagen.js')
 const antilink = JSON.parse(fs.readFileSync('./settings/Grupo/Json/antilink.json'))
-const bngp = JSON.parse(fs.readFileSync('./settings/Grupo/Json/grupo.json'))
+let bngp = JSON.parse(fs.readFileSync('./settings/Grupo/Json/grupo.json'))
 const Antipv = JSON.parse(fs.readFileSync('./settings/Grupo/Json/chat.json'))
 const registro = JSON.parse(fs.readFileSync('./settings/Grupo/Json/registros.json')) 
 // 🔇 Lista de usuarios silenciados por grupo (comando .mute / .desmute)
@@ -114,7 +118,9 @@ if (horap >= '01' && horap <= '05') {
 
 
  //Configuraciones 
-var { creador, owner, Bot, prefijo, JpgBot, NAUFRA_KEY } = require("./settings/settings.json");        
+var { creador, owner, Bot, prefijo, JpgBot, NAUFRA_KEY } = require("./settings/settings.json");
+// 🔑 ¿El dueño ya puso su clave de api.naufrabot.com en settings.json?
+const tieneApiKey = () => !!NAUFRA_KEY && !/coloca|aqu[ií]|tu clave/i.test(NAUFRA_KEY) && NAUFRA_KEY.trim().length > 3        
 let prefixo = prefijo;
 
 const APINAUFRA = 'https://api.naufrabot.com'
@@ -133,13 +139,24 @@ if(i.admin == 'superadmin') admins.push(i.id)
 }
 return admins
 }
+// 🗂️ Caché de datos de grupos (se borra sola a los 5 min y cada vez que alguien
+// entra, sale o cambia de admin). En la V5 nunca se borraba: si hacías admin al
+// bot, seguía diciendo "el bot debe ser admin" hasta reiniciar.
 const groupCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000
+const cacheGet = (jid) => {
+  const c = groupCache.get(jid)
+  if (!c) return null
+  if (Date.now() - c.t > CACHE_TTL) { groupCache.delete(jid); return null }
+  return c.data
+}
+const cacheSet = (jid, data) => groupCache.set(jid, { data, t: Date.now() })
 // ══════════════════════════════════════════════════════════
 // 🔌 CONEXIÓN A WHATSAPP
 // ══════════════════════════════════════════════════════════
 async function startProo() {
   console.log(banner.string);
-  console.log(chalk.cyanBright("🔥 NaufraBot Base"));
+  console.log(chalk.cyanBright("🔥 NaufraBot Base V6"));
 
   // Estado de sesión
   const { state, saveCreds } = await useMultiFileAuthState("./session");
@@ -217,80 +234,19 @@ async function startProo() {
 // 👋 EVENTOS DE GRUPO — BIENVENIDA Y DESPEDIDA
 // ══════════════════════════════════════════════════════════
 Naufra.ev.on("group-participants.update", async (anu) => {
-    console.log("EVENTO RECIBIDO:");
-    console.log(JSON.stringify(anu, null, 2));
-if(!welkom.includes(anu.id)) return
-try {
-const metadata = await Naufra.groupMetadata(anu.id)
-  participants = anu.participants
-  for (let participante of participants){
-  const num = participante.phoneNumber || participante.id
- 
-if(anu.action == 'add') {
-const grup = metadata.subject
-const mem = metadata.participants.length
-const sol = `
-✦━─⌬༓༒༓⌬─━✦
-*✧༺ 𝑩𝒊𝒆𝒏𝒗𝒆𝒏𝒊𝒅𝒐/𝒂 ✦༻✧*
-
-💌 「 Hola @${num.split('@')[0]} 🌟 y bienvenido/a al reino de *${grup}* 」
-🥂 Que tu estancia esté llena de risas, buena charla 🗨 y alguna que otra copa de hidromiel 🍯🍺
-
-📜 Recuerda echarle un ojo a nuestras reglas para no invocar a los dragones 🐉🔥
- 
-『 👥 Miembros actuales: ${mem} 』
-✦━─⌬༓༒༓⌬─━✦
-`
-
-await Naufra.sendMessage(anu.id, {
-  image: { url: "https://i.postimg.cc/rzXqHmYQ/20260823-215152.jpg" },
-  caption: sol,
-  mentions: [num]  // 👈 Aquí haces la mención real
+  // Alguien entró / salió / cambió de admin: borramos la caché para tener datos frescos
+  const metadataVieja = cacheGet(anu.id)
+  groupCache.delete(anu.id)
+  try {
+    await Bienvenidas.manejarEvento(Naufra, anu, metadataVieja)
+  } catch (e) {
+    console.log('Error: %s', color(String(e), "red"))
+  }
 })
-}
 
-if (anu.action === 'remove') {
-const grup = metadata.subject
-const mem = metadata.participants.length
-
-const sol = `
-✦━─⌬༓༒༓⌬─━✦
-*✧༺ 𝑫𝒆𝒔𝒑𝒆𝒅𝒊𝒅𝒂 ༻✧*
-
-😢 「 @${num.split('@')[0]} ha abandonado *${grup}* 」
-
-🌸 Esperamos que hayas disfrutado tu estancia.
-✨ ¡Las puertas siempre estarán abiertas para ti!
-
-『 👥 Miembros actuales: ${mem} 』
-✦━─⌬༓༒༓⌬─━✦
-`
-
-await Naufra.sendMessage(anu.id, {
-  image: { url: "https://i.postimg.cc/rzXqHmYQ/20260823-215152.jpg" },
-  caption: sol,
-  mentions: [num]
-})
-}
-if (anu.action == 'promote') {
-    teks = `
-✦━─┈༓༒༓┈─━✦
-
-     *✧༺ 𝓝𝓾𝓮𝓿𝓸 𝓐𝓭𝓶𝓲𝓷 ༻✧*
-
-🪪 𝗡𝗼𝗺𝗯𝗿𝗲: @${num.split('@')[0]}
-🌐 𝗚𝗿𝘂𝗽𝗼: ${metadata.subject}
-💌 「 ¡Enhorabuena! 🎉 Has ascendido a la mesa de los administradores 🪄 」
-
-✦━─┈༓༒༓┈─━✦
-`
-  await Naufra.sendMessage(anu.id,{image : { url : "https://i.postimg.cc/rzXqHmYQ/20260823-215152.jpg" }, caption : teks, mentions : [num]})
-    }
-
-} 
-}catch(e) {
-console.log('Error: %s', color(e, "red"))
-}
+// Si cambian nombre, descripción o ajustes del grupo, también se refresca la caché
+Naufra.ev.on("groups.update", (updates) => {
+  for (const u of updates || []) if (u?.id) groupCache.delete(u.id)
 })
 
 Naufra.ev.on('creds.update', saveCreds)
@@ -336,11 +292,11 @@ const sender = isGroup
 let groupMetadata = null;
 
 if (isGroup) {
-    groupMetadata = groupCache.get(from);
+    groupMetadata = cacheGet(from);
 
     if (!groupMetadata) {
         groupMetadata = await Naufra.groupMetadata(from).catch(() => null);
-        if (groupMetadata) groupCache.set(from, groupMetadata);
+        if (groupMetadata) cacheSet(from, groupMetadata);
     }
 }
 
@@ -378,28 +334,22 @@ const senderAlt = isGroup ? info.key.participant : from
 const isOwner = numerodono.includes(sender) || numerodono.includes(senderAlt)
 
 
-const isGroupAdmins = groupAdmins.some(admin => admin.id?.includes(sender));
-const isBotGroupAdmins = esAdminFlexible(Naufra, groupAdmins.map(p => p.id));
+// 🛡️ En Baileys 7 los admins pueden venir con LID (@lid) o con número (@s.whatsapp.net).
+// Comparamos todas las formas para que los admins sí sean reconocidos.
+const _idsDelQueEscribe = [sender, info.key.participant, info.key.participantPn, info.key.participantLid, info.key.participantAlt]
+  .filter(Boolean).map(j => String(j).split(':')[0].split('@')[0])
+const isGroupAdmins = groupAdmins.some(admin =>
+  [admin.id, admin.phoneNumber, admin.lid].filter(Boolean)
+    .some(j => _idsDelQueEscribe.includes(String(j).split(':')[0].split('@')[0])));
+const isBotGroupAdmins = esAdminFlexible(Naufra, groupAdmins.flatMap(p => [p.id, p.phoneNumber, p.lid].filter(Boolean)));
 
 function esAdminFlexible(Naufra, listaDeAdmins = []) {
-  if (!Naufra?.authState?.creds?.me) return false;
-
-  const botId = Naufra.authState.creds.me.id;  
-  const botLid = Naufra.authState.creds.me.lid;
-
-  const clean = (jid) => jid?.split(':')[0]; 
-
-  return listaDeAdmins.some(adminJid => {
-    const adminBase = clean(adminJid);
-    return (
-      adminJid === botId ||
-      adminJid === botLid ||
-      adminJid === botId.replace(/:\d+/, '') || // compara sin ":xx"
-      adminJid === botLid.replace(/:\d+/, '') ||
-      adminBase === clean(botId) ||
-      adminBase === clean(botLid)
-    );
-  });
+  if (!Naufra?.authState?.creds?.me) return false;
+  // Número y LID del bot, sin ":xx" ni "@..."
+  const base = (jid) => String(jid || '').split(':')[0].split('@')[0];
+  const botIds = [Naufra.authState.creds.me.id, Naufra.authState.creds.me.lid, Naufra.user?.id, Naufra.user?.lid]
+    .filter(Boolean).map(base);
+  return listaDeAdmins.some(adminJid => adminJid && botIds.includes(base(adminJid)));
 }
 
 const isUrl = (url) => { return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/, 'gi')) }
@@ -409,7 +359,6 @@ const data = new Date().toLocaleDateString('PE', { ...options, day: '2-digit', m
 const hora = new Date().toLocaleTimeString('PE', options) 
 
            // Constantes if nuevas
-  const iswelkom = isGroup ? welkom.includes(from) : false
 const isBanGp = isGroup ? bngp.includes(from) : false
 const isAntipv = Antipv.includes('activo')
 const isReg = checkOfReg(sender)
@@ -530,6 +479,23 @@ buffer = Buffer.concat([buffer, chunk]) }
 return buffer}
 
 
+
+// 🖼️ Devuelve la imagen que mandaron con el comando o la imagen respondida (o null)
+const obtenerImagenDelMensaje = async () => {
+  try {
+    const citado = info.message?.extendedTextMessage?.contextInfo?.quotedMessage
+    const img = info.message?.imageMessage
+      || citado?.imageMessage
+      || citado?.viewOnceMessageV2?.message?.imageMessage
+      || citado?.viewOnceMessage?.message?.imageMessage
+      || info.message?.viewOnceMessageV2?.message?.imageMessage
+    if (!img) return null
+    return await getFileBuffer(img, 'image')
+  } catch (e) {
+    console.log('Error leyendo imagen:', e.message)
+    return null
+  }
+}
 
 //funcion para mencionar 
 
@@ -657,7 +623,8 @@ expiredDayli()
 expiredPescar()
 expiredRuleta()
 //ban grupo
-if(isBanGp) {
+// En un grupo baneado el bot no responde... salvo al dueño para que pueda usar /unbangp
+if(isBanGp && !(isOwner && comando === 'unbangp')) {
 return
 }
       // antiprivado
@@ -685,6 +652,50 @@ if (isGroup) {
   }
 }
 
+// 🚫 ANTILINK — en la V5 estaba dentro de los comandos y solo revisaba mensajes
+// que empezaban con el prefijo, por eso casi nunca funcionaba.
+{
+/// 🚫 ANTILINK MEJORADO CON DEPURACIÓN Y COMPATIBILIDAD LID/JID
+
+const { jidNormalizedUser } = require("@whiskeysockets/baileys")
+const texto = (budy || "").toLowerCase()
+
+if (isGroup && isAntiLink && !isBot && !isGroupAdmins && !isOwner) { // !isBot: que no se expulse a sí mismo por sus propios links
+  if (texto.includes(".com") || texto.includes("http://") || texto.includes("https://")) {
+    console.log("⚠️ Enlace detectado:", texto)
+
+    const groupMetadata = await Naufra.groupMetadata(from)
+    const botIsAdmin = groupMetadata.participants.find(p => p.id === owner && p.admin)
+    if (!isBotGroupAdmins) return enviar("⚠️ No soy administrador, no puedo expulsar.")
+
+    const member = groupMetadata.participants.find(p => p.id === sender)
+    if (!member) return console.log("⚠️ El usuario ya no está en el grupo.")
+
+    const Kick = jidNormalizedUser(sender)
+    console.log("👞 Intentando expulsar a:", Kick)
+
+    try {
+      console.log("🗑️ Eliminando mensaje...")
+      await Naufra.sendMessage(from, { 
+        delete: { remoteJid: from, fromMe: false, id: info.key.id, participant: sender } 
+      })
+
+      console.log("🚷 Expulsando usuario...")
+      const result = await Naufra.groupParticipantsUpdate(from, [Kick], "remove")
+      console.log("✅ Resultado expulsión:", result)
+
+      await enviar(`🚫 Se detectó un link prohibido, el usuario @${sender.split("@")[0]} fue eliminado`, { mentions: [sender] })
+
+    } catch (err) {
+      console.log("❌ Error al ejecutar antilink:")
+      console.log("Mensaje:", err.message)
+      console.log("Stack completo:", err)
+      await enviar(`⚠️ No se pudo expulsar a @${sender.split("@")[0]}.\nMotivo: ${err.message}`, { mentions: [sender] })
+    }
+  }
+}
+}
+
 if (!isCmd) return;
 
 // INICIO DE COMANDOS
@@ -692,6 +703,28 @@ if (!isCmd) return;
 // Si el grupo está en modo admin y el usuario no es admin ni owner, se bloquea su acceso
 if (isModoAdmin && !isGroupAdmins && !isOwner) return;
 if (!botActivo && !isOwner) return
+
+// 🔑 COMANDOS QUE USAN LA API OFICIAL (api.naufrabot.com)
+// Si el dueño todavía no puso su NAUFRA_KEY en settings.json, en vez de dar
+// un error raro, el bot explica cómo conseguir la clave.
+const comandosConApi = [
+  'miapi', 'apikey', 'attp', 'attp2', 'attp3', 'attp4', 'attp5', 'attp6', 'ship',
+  'gpt', 'gpt4', 'openai', 'chatgpt', 'ia', 'llama', 'meta', 'simi', 'infocomando', 'infocmd',
+  'ytsearch', 'play', 'play2', 'playvideo', 'ytmp4', 'playdoc', 'fb', 'facebook', 'tiktok', 'x', 'twitter',
+  'mediafire', 'instagram', 'pinterest', 'pin', 'descargarapk', 'apk',
+  'horoscopo', 'wikipedia', 'wiki', 'google', 'g', 'clima', 'tiempo', 'mareas', 'marea',
+  'hd', 'fullhd', 'remini', 'mejorar', 'removebg', 'quitarfondo', 'sinfondo',
+  'imagine', 'imaginar', 'dalle', 'crearimagen', 'buscarsticker', 'stickersearch', 'ssearch',
+  'perfilff', 'ffinfo', 'ff', 'clanff', 'infoclan'
+]
+if (comandosConApi.includes(comando) && !tieneApiKey()) {
+  return enviar(`🔑 *Este comando necesita la API oficial de NaufraBot*
+
+El dueño del bot todavía no colocó su *API Key* en *settings/settings.json* (campo NAUFRA_KEY).
+
+🌐 Consigue tu clave aquí: https://api.naufrabot.com
+📚 Escribe *${prefixo}comprarapi* para ver los pasos.`)
+}
 
 switch(comando) {
 
@@ -1038,12 +1071,13 @@ Algunos comandos del bot necesitan *API externa* para funcionar correctamente.
 
 Por ejemplo:
 
-📥 Descargas
-🎨 Generar stickers con texto
-🌍 HTTP requests
-📹 Descargas de Facebook
-📸 Descargas de redes sociales
-⚙️ Inteligencia artificial 
+📥 Descargas (YouTube, TikTok, Facebook, Instagram, X, MediaFire, APK)
+🎨 Stickers con texto (attp) y buscador de stickers
+🖼️ Mejorar fotos a HD y quitar fondos
+🤖 Inteligencia artificial (ChatGPT, Llama, imágenes con IA)
+🌦️ Clima y mareas
+🎮 Perfiles y clanes de Free Fire
+🏅 Tarjetas de nivel y ship con imagen
 
 Para usar estas funciones necesitas una *API Key*.
 
@@ -1152,57 +1186,141 @@ break;
 // ══════════════════════════════════════════════════════════
 // 📦 COMANDOS: CONFIGURACION DEL GRUPO (bienvenida, ban de grupo, modo admin, antilink, etc.)
 // ══════════════════════════════════════════════════════════
+// ── 👋 BIENVENIDAS Y DESPEDIDAS (V6: cada una por separado) ──
+// /bienvenida 1/0  ·  /despedida 1/0  ·  /setbienvenida texto  ·  /setdespedida texto
+// /setfotobienvenida  ·  /setfotodespedida  ·  /resetbienvenida  ·  /resetdespedida
+// /probarbienvenida  ·  /probardespedida  ·  /avisosadmin 1/0  ·  /configbienvenida
 case 'welcome':
-case 'bienvenida': {
+case 'bienvenida':
+case 'bienvenidas':
+case 'despedida':
+case 'despedidas':
+case 'bye':
+case 'avisosadmin': {
 if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins && !isOwner) return enviar(respuesta.admin)
 
-if (!isGroupAdmins) return enviar(respuesta.admin)
-if (!isBotGroupAdmins) return enviar(respuesta.botadmin)
+const tipoBv = ['despedida', 'despedidas', 'bye'].includes(comando) ? 'despedida'
+  : comando === 'avisosadmin' ? 'avisosAdmin' : 'bienvenida'
+const nombreBv = { bienvenida: 'La bienvenida', despedida: 'La despedida', avisosAdmin: 'Los avisos de nuevo admin' }[tipoBv]
+const cfgBv = Bienvenidas.obtener(from)
+const opcion = (args[0] || '').toLowerCase()
 
-if (!args[0]) {
-return enviar(`✦ Usa:
+if (!['1', '0', 'on', 'off'].includes(opcion)) {
+return enviar(`✦ Uso de *${prefixo}${comando}*
 
-${prefixo}welcome 1 → Activar
-${prefixo}welcome 0 → Desactivar`)
+${prefixo}${comando} 1 → Activar
+${prefixo}${comando} 0 → Desactivar
+
+📌 Estado actual: ${cfgBv[tipoBv] ? '✅ Activado' : '❌ Desactivado'}
+⚙️ Mira toda la configuración con *${prefixo}configbienvenida*`)
 }
 
-if (args[0] == "1") {
-
-if (iswelkom) return enviar("✅ Las bienvenidas y despedidas ya están activadas.")
-
-welkom.push(from)
-fs.writeFileSync(
-'./settings/Grupo/Json/welkom.json',
-JSON.stringify(welkom, null, 2)
-)
-
-return enviar("✅ Bienvenidas y despedidas activadas correctamente.")
-
+const activar = opcion === '1' || opcion === 'on'
+if (cfgBv[tipoBv] === activar) return enviar(`⚠️ ${nombreBv} ya estaba ${activar ? 'activada' : 'desactivada'} en este grupo.`)
+Bienvenidas.cambiar(from, { [tipoBv]: activar })
+enviar(`${activar ? '✅' : '❌'} ${nombreBv} fue *${activar ? 'ACTIVADA' : 'DESACTIVADA'}* en este grupo.${activar && tipoBv !== 'avisosAdmin' ? `\n\n✏️ Personaliza el texto con *${prefixo}set${tipoBv} tu texto*\n🧪 Pruébala con *${prefixo}probar${tipoBv}*` : ''}`)
 }
+break
 
-if (args[0] == "0") {
+case 'setbienvenida':
+case 'setwelcome':
+case 'setdespedida':
+case 'setbye': {
+if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins && !isOwner) return enviar(respuesta.admin)
+const esBv = comando === 'setbienvenida' || comando === 'setwelcome'
+if (!q) return enviar(`✏️ Escribe el nuevo texto de la ${esBv ? 'bienvenida' : 'despedida'}.
 
-if (!iswelkom) return enviar("❌ Las bienvenidas ya están desactivadas.")
+*Variables que puedes usar:*
+• {usuario} → menciona a la persona
+• {grupo} → nombre del grupo
+• {miembros} → cantidad de miembros
+• {descripcion} → descripción del grupo
+• {hora} · {fecha}
 
-const index = welkom.indexOf(from)
-
-if (index !== -1) {
-welkom.splice(index, 1)
+*Ejemplo:*
+${prefixo}${comando} ${esBv ? 'Hola {usuario} 👋 bienvenido a {grupo}, ya somos {miembros}!' : 'Adiós {usuario} 👋 te extrañaremos en {grupo}'}`)
+Bienvenidas.cambiar(from, esBv ? { textoBienvenida: q } : { textoDespedida: q })
+enviar(`✅ Texto de ${esBv ? 'bienvenida' : 'despedida'} guardado.\n🧪 Pruébalo con *${prefixo}probar${esBv ? 'bienvenida' : 'despedida'}*`)
 }
+break
 
-fs.writeFileSync(
-'./settings/Grupo/Json/welkom.json',
-JSON.stringify(welkom, null, 2)
-)
-
-return enviar("✅ Bienvenidas y despedidas desactivadas correctamente.")
-
+case 'resetbienvenida':
+case 'resetdespedida': {
+if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins && !isOwner) return enviar(respuesta.admin)
+const esBv = comando === 'resetbienvenida'
+Bienvenidas.cambiar(from, esBv ? { textoBienvenida: '', imagenBienvenida: '' } : { textoDespedida: '', imagenDespedida: '' })
+enviar(`♻️ La ${esBv ? 'bienvenida' : 'despedida'} volvió al texto e imagen por defecto.`)
 }
+break
 
-enviar(`✦ Usa:
+case 'setfotobienvenida':
+case 'setfotodespedida': {
+if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins && !isOwner) return enviar(respuesta.admin)
+const esBv = comando === 'setfotobienvenida'
+const campo = esBv ? 'imagenBienvenida' : 'imagenDespedida'
+if ((args[0] || '').toLowerCase() === 'quitar') {
+  Bienvenidas.cambiar(from, { [campo]: '' })
+  return enviar('♻️ Imagen quitada, se usará la imagen por defecto.')
+}
+const bufImg = await obtenerImagenDelMensaje()
+if (!bufImg) return enviar(`🖼️ Envía o responde a una imagen con *${prefixo}${comando}*\n\n📌 Esta imagen se usa cuando el usuario no tiene foto de perfil.\n🗑️ Para quitarla: *${prefixo}${comando} quitar*`)
+try {
+  enviar('⏳ Guardando imagen...')
+  const urlImg = await subirImagen(bufImg)
+  Bienvenidas.cambiar(from, { [campo]: urlImg })
+  enviar(`✅ Imagen de ${esBv ? 'bienvenida' : 'despedida'} guardada.`)
+} catch (e) {
+  console.log(e)
+  enviar('❌ No se pudo subir la imagen, intenta de nuevo.')
+}
+}
+break
 
-${prefixo}welcome 1 → Activar
-${prefixo}welcome 0 → Desactivar`)
+case 'probarbienvenida':
+case 'testwelcome':
+case 'probardespedida':
+case 'testbye': {
+if (!isGroup) return enviar(respuesta.grupos)
+if (!isGroupAdmins && !isOwner) return enviar(respuesta.admin)
+const esBv = comando === 'probarbienvenida' || comando === 'testwelcome'
+const cfgBv = Bienvenidas.obtener(from)
+const datosBv = { usuario: '@' + sender.split('@')[0], grupo: groupName, miembros: groupMembers.length, descripcion: groupDesc }
+const textoBv = Bienvenidas.rellenar((esBv ? cfgBv.textoBienvenida : cfgBv.textoDespedida) || (esBv ? Bienvenidas.TEXTO_BIENVENIDA : Bienvenidas.TEXTO_DESPEDIDA), datosBv)
+const imgBv = await Bienvenidas.fotoDe(Naufra, [sender], esBv ? cfgBv.imagenBienvenida : cfgBv.imagenDespedida)
+await Bienvenidas.enviarConImagen(Naufra, from, imgBv, textoBv, [sender])
+if (!(esBv ? cfgBv.bienvenida : cfgBv.despedida)) enviar(`ℹ️ Así se verá. Ojo: todavía está *desactivada*, actívala con *${prefixo}${esBv ? 'bienvenida' : 'despedida'} 1*`)
+}
+break
+
+case 'configbienvenida':
+case 'configdespedida': {
+if (!isGroup) return enviar(respuesta.grupos)
+const c = Bienvenidas.obtener(from)
+enviar(`⚙️ *BIENVENIDAS EN ${groupName}*
+
+👋 Bienvenida: ${c.bienvenida ? '✅ Activada' : '❌ Desactivada'}
+🚪 Despedida: ${c.despedida ? '✅ Activada' : '❌ Desactivada'}
+👑 Avisos de admin: ${c.avisosAdmin ? '✅ Activados' : '❌ Desactivados'}
+
+✏️ Texto bienvenida: ${c.textoBienvenida ? 'personalizado' : 'por defecto'}
+✏️ Texto despedida: ${c.textoDespedida ? 'personalizado' : 'por defecto'}
+🖼️ Imagen bienvenida: ${c.imagenBienvenida ? 'personalizada' : 'por defecto'}
+🖼️ Imagen despedida: ${c.imagenDespedida ? 'personalizada' : 'por defecto'}
+
+*Comandos:*
+${prefixo}bienvenida 1/0
+${prefixo}despedida 1/0
+${prefixo}avisosadmin 1/0
+${prefixo}setbienvenida texto
+${prefixo}setdespedida texto
+${prefixo}setfotobienvenida (responde a una imagen)
+${prefixo}setfotodespedida (responde a una imagen)
+${prefixo}probarbienvenida · ${prefixo}probardespedida
+${prefixo}resetbienvenida · ${prefixo}resetdespedida`)
 }
 break
 
@@ -1640,12 +1758,16 @@ break
 case "attp":
 case "attp2":
 case "attp3":
+case "attp4":
+case "attp5":
+case "attp6":
 if(!isReg) return enviar(respuesta.registro)
 if (!q) return enviar("Coloca un texto o emoji después del comando")
 
 try {
 
-let url = `${APINAUFRA}/api/${messagesC}?text=${encodeURIComponent(q)}&apikey=${NAUFRA_KEY}`
+// ✅ V6: antes usaba "messagesC" (que incluía el prefijo, ej: "/attp") y la API fallaba
+let url = `${APINAUFRA}/api/${comando}?text=${encodeURIComponent(q)}&apikey=${NAUFRA_KEY}`
 
 let res = await fetch(url)
 let buffer = await res.buffer()
@@ -1867,8 +1989,7 @@ break;
 // ══════════════════════════════════════════════════════════
 // 📦 COMANDOS: ECONOMIA, NIVELES Y JUEGOS (perfil, minar, ruleta, pescar, tienda, ship, etc.)
 // ══════════════════════════════════════════════════════════
-case 'perfil' : case 'cartera' :
-case 'nivel' : case 'minivel' : {
+case 'perfil' : case 'cartera' : {
 
 if(!isReg) return enviar(respuesta.registro)
 
@@ -3222,6 +3343,258 @@ break;
 
 
 // ══════════════════════════════════════════════════════════
+// 📦 COMANDOS: NUEVOS EN LA V6 — API OFICIAL api.naufrabot.com
+// (todos necesitan tu NAUFRA_KEY en settings/settings.json)
+// ══════════════════════════════════════════════════════════
+
+// 🖼️ Mejora una imagen a HD
+case 'hd':
+case 'fullhd':
+case 'remini':
+case 'mejorar': {
+if(!isReg) return enviar(respuesta.registro)
+const bufHd = await obtenerImagenDelMensaje()
+if (!bufHd) return enviar(`📌 Envía o responde a una imagen con *${prefixo}${comando}* para mejorarla a HD`)
+try {
+  enviar('✪ 🔄 Mejorando la calidad de la imagen...')
+  const imgUrl = await subirImagen(bufHd)
+  const resultado = await getBuffer(`${APINAUFRA}/api/hd?apikey=${NAUFRA_KEY}&url=${encodeURIComponent(imgUrl)}`)
+  if (!resultado) throw new Error('La API no devolvió imagen')
+  await Naufra.sendMessage(from, { image: resultado, caption: '✪ ✅ Imagen mejorada en HD' }, { quoted: info })
+  await addXp(sender, 3)
+} catch (e) {
+  console.log('❌ Error en HD:', e)
+  enviar('✪ ⚠️ Error al mejorar la imagen.')
+}
+}
+break
+
+// ✂️ Quita el fondo de una imagen
+case 'removebg':
+case 'quitarfondo':
+case 'sinfondo': {
+if(!isReg) return enviar(respuesta.registro)
+const bufBg = await obtenerImagenDelMensaje()
+if (!bufBg) return enviar(`🖼️ Envía o responde a una imagen con *${prefixo}${comando}* para quitarle el fondo.`)
+try {
+  enviar('✂️ Quitando el fondo, dame unos segundos...')
+  const imgUrl = await subirImagen(bufBg)
+  const resultado = await getBuffer(`${APINAUFRA}/api/removebg?url=${encodeURIComponent(imgUrl)}&apikey=${NAUFRA_KEY}`)
+  if (!resultado) throw new Error('La API no devolvió imagen')
+  await Naufra.sendMessage(from, { image: resultado, caption: '✂️ *Fondo eliminado*' }, { quoted: info })
+  await addXp(sender, 3)
+} catch (e) {
+  console.log('❌ Error en removebg:', e)
+  enviar('❌ Error quitando el fondo de la imagen, intenta de nuevo.')
+}
+}
+break
+
+// 🎨 Genera imágenes con IA
+case 'imagine':
+case 'imaginar':
+case 'dalle':
+case 'crearimagen': {
+if(!isReg) return enviar(respuesta.registro)
+if (!q) return enviar(`🎨 Escribe qué imagen quieres que la IA genere.\n\n> *Ejemplo:* ${prefixo}imagine un gato astronauta en la luna`)
+try {
+  enviar('🎨 Generando tu imagen, dame unos segundos...')
+  const resultado = await getBuffer(`${APINAUFRA}/api/imagine?prompt=${encodeURIComponent(q.trim())}&apikey=${NAUFRA_KEY}`)
+  if (!resultado) throw new Error('La API no devolvió imagen')
+  await Naufra.sendMessage(from, { image: resultado, caption: `🎨 *${q.trim()}*` }, { quoted: info })
+  await addXp(sender, 3)
+} catch (e) {
+  console.log('❌ Error en imagine:', e)
+  enviar('❌ Error generando la imagen, intenta de nuevo.')
+}
+}
+break
+
+// 🔎 Busca stickers por nombre
+case 'buscarsticker':
+case 'stickersearch':
+case 'ssearch': {
+if(!isReg) return enviar(respuesta.registro)
+if (!q) return enviar(`🔎 Escribe qué sticker quieres buscar.\n\n> *Ejemplo:* ${prefixo}buscarsticker gato bailando`)
+try {
+  const dataSt = await fetchJson(`${APINAUFRA}/api/stickersearch?q=${encodeURIComponent(q.trim())}&limit=2&apikey=${NAUFRA_KEY}`)
+  if (!dataSt?.status || !dataSt.resultados?.length) return enviar(`❌ No encontré stickers para *"${q.trim()}"*`)
+  for (const opcion of dataSt.resultados.slice(0, 2)) { // máximo 2 para no hacer spam
+    if (!opcion.sticker) continue
+    await Naufra.sendMessage(from, { sticker: { url: opcion.sticker } }, { quoted: info })
+  }
+  await addXp(sender, 1)
+} catch (e) {
+  console.log('❌ Error en buscarsticker:', e)
+  enviar('❌ Error buscando stickers, intenta de nuevo.')
+}
+}
+break
+
+// 🦙 Otra IA: Llama
+case 'llama':
+case 'meta': {
+if (!q) return enviar(`❌ Escribe una pregunta\n\n> *Ejemplo:* ${prefixo}llama ¿qué es un agujero negro?`)
+try {
+  const dataLl = await fetchJson(`${APINAUFRA}/llama?apikey=${NAUFRA_KEY}&prompt=${encodeURIComponent(q)}&t=${Date.now()}`)
+  if (!dataLl?.respuesta) return enviar('❌ Llama no respondió, intenta de nuevo.')
+  await Naufra.sendMessage(from, { text: `🦙 *Llama IA*\n\n${dataLl.respuesta}` }, { quoted: info })
+} catch (e) {
+  console.log('❌ Error en llama:', e)
+  enviar('❌ Error usando Llama')
+}
+}
+break
+
+// 🌦️ Clima de cualquier ciudad
+case 'clima':
+case 'tiempo': {
+if (!q) return enviar(`🌦️ Uso: ${prefixo}${comando} lugar\n\n> *Ejemplo:* ${prefixo}clima Lima`)
+try {
+  const res = await axios.get(`${APINAUFRA}/api/clima?apikey=${NAUFRA_KEY}&lugar=${encodeURIComponent(q)}`)
+  const d = res.data
+  if (!d?.status) return enviar('❌ Lugar no encontrado')
+  enviar(`╭━〔 🌦 CLIMA 〕━⬣
+🌍 Lugar: ${d.ubicacion?.nombre}, ${d.ubicacion?.pais}
+
+🌡 Temperatura: ${d.clima?.temperatura}°C
+🤒 Sensación: ${d.clima?.sensacion}°C
+💧 Humedad: ${d.clima?.humedad}%
+
+🌬 Viento: ${d.clima?.viento} km/h
+🧭 Dirección: ${d.clima?.direccion_viento}°
+
+🌧 Lluvia: ${d.clima?.lluvia} mm
+☀ Índice UV: ${d.sol?.uv ?? 'N/D'}
+🌧 Prob. lluvia: ${d.sol?.prob_lluvia ?? 'N/D'}%
+╰━━━━━━━━━━━━⬣`)
+} catch (e) {
+  console.log('❌ Error en clima:', e.message)
+  enviar('❌ No pude consultar el clima, intenta de nuevo.')
+}
+}
+break
+
+// 🌊 Estado del mar y mareas
+case 'mareas':
+case 'marea': {
+if (!q) return enviar(`🌊 Uso: ${prefixo}${comando} lugar\n\n> *Ejemplo:* ${prefixo}mareas Máncora`)
+try {
+  const res = await axios.get(`${APINAUFRA}/api/mareas?apikey=${NAUFRA_KEY}&lugar=${encodeURIComponent(q)}`)
+  const d = res.data
+  if (!d?.status) return enviar('❌ Lugar no encontrado')
+  const ola = parseFloat(d.mar?.altura_ola) || 0
+  let consejo = '⚠️ No hay datos del mar'
+  if (ola > 0) consejo = ola <= 0.8 ? '🏊 Mar tranquilo, buen momento para nadar'
+    : ola <= 1.5 ? '🌊 Oleaje moderado, nadar con precaución' : '⛔ Oleaje fuerte, no recomendado nadar'
+  enviar(`╭━〔 🌊 ESTADO DE MAREAS 〕━⬣
+🌍 Lugar: ${d.ubicacion?.nombre}, ${d.ubicacion?.pais}
+
+🌊 Altura ola: ${d.mar?.altura_ola ?? 'N/D'} m
+🌡 Temp. mar: ${d.mar?.temperatura_mar ?? 'N/D'}°C
+
+🌙 Pleamar: ${d.mareas?.pleamar ?? 'N/D'}
+🪨 Bajamar: ${d.mareas?.bajamar ?? 'N/D'}
+
+${consejo}
+╰━━━━━━━━━━━━⬣`)
+} catch (e) {
+  console.log('❌ Error en mareas:', e.message)
+  enviar('❌ No pude consultar las mareas, intenta de nuevo.')
+}
+}
+break
+
+// 🎮 Perfil de Free Fire por UID
+case 'perfilff':
+case 'ffinfo':
+case 'ff': {
+const uid = args.find(a => /^\d{6,15}$/.test(a))
+if (!uid) return enviar(`🎮 Uso: *${prefixo}${comando} UID*\n\n> *Ejemplo:* ${prefixo}${comando} 7725371391`)
+try {
+  enviar(`🔎 Buscando el perfil *${uid}*...`)
+  const { data: d } = await axios.get(`${APINAUFRA}/api/freefire`, { params: { id: uid, apikey: NAUFRA_KEY }, timeout: 70000 })
+  if (!d?.status || !d.perfil) return enviar('❌ No pude obtener ese perfil. Revisa el UID o inténtalo en unos minutos.')
+  const pf = d.perfil, c = d.clan, rg = d.rangos || {}, eq = d.equipamiento || {}, st = d.estadisticas || {}
+  const fmt = n => n == null ? '—' : Number(n).toLocaleString('es-PE')
+  const rangoTxt = (r, pts, unidad) => r ? `*${r.nombre}* (${fmt(r.puntos)} ${unidad})` : (pts ? `*${fmt(pts)} ${unidad}*` : null)
+  const br = rangoTxt(rg.br, rg.br_puntos, 'pts'), cs = rangoTxt(rg.cs, rg.cs_puntos, 'marcas')
+  const NOMBRES = { solo: 'Solo', duo: 'Dúo', escuadra: 'Escuadra', clashSquad: 'Clash Squad' }
+  const modos = Object.keys(NOMBRES).filter(k => st[k]).map(k =>
+    `• *${NOMBRES[k]}:* ${fmt(st[k].partidas)} partidas · ${fmt(st[k].victorias)} victorias · ${fmt(st[k].kills)} kills${st[k].kd != null ? ` · KD ${st[k].kd}` : ''}`)
+  enviar(`🎮 *PERFIL FREE FIRE*
+
+👤 Nick: *${pf.nickname || 'Sin nombre'}*
+🆔 UID: *${uid}*
+🎖️ Nivel: *${pf.nivel ?? '—'}*
+❤️ Likes: *${fmt(pf.likes)}*
+🌎 Región: *${pf.region ?? '—'}*
+🛡️ Clan: *${c?.nombre || 'Sin clan'}*${c?.nivel ? ` · Nv ${c.nivel}` : ''}
+${br || cs ? `\n🏆 *RANGO*\n${br ? `• BR: ${br}\n` : ''}${cs ? `• CS: ${cs}\n` : ''}` : ''}${eq.personaje || eq.arma ? `\n🎒 *EQUIPAMIENTO*\n${eq.personaje ? `• Personaje: ${eq.personaje}\n` : ''}${eq.arma ? `• Arma: ${eq.arma}\n` : ''}${eq.mascota ? `• Mascota: ${eq.mascota}\n` : ''}` : ''}${modos.length ? `\n📊 *ESTADÍSTICAS*\n${modos.join('\n')}\n` : ''}
+📅 Cuenta creada: *${pf.creada ?? '—'}*
+🕹️ Último acceso: *${pf.ultimo_acceso ?? '—'}*${pf.firma ? `\n📝 Bio: ${pf.firma}` : ''}`)
+} catch (e) {
+  console.log('❌ Error en perfilff:', e.response?.status || e.message)
+  enviar('❌ No pude obtener ese perfil. Inténtalo en unos minutos.')
+}
+}
+break
+
+// 🛡️ Información de un clan de Free Fire
+case 'clanff':
+case 'infoclan': {
+const idClan = args.find(a => /^\d{4,15}$/.test(a))
+const region = (args.find(a => /^[a-zA-Z]{2,6}$/.test(a)) || 'US').toUpperCase()
+if (!idClan) return enviar(`🛡️ Uso: *${prefixo}${comando} ID_DEL_CLAN REGION*\n\n> *Ejemplo:* ${prefixo}${comando} 3045678912 US\n\nRegiones: BR, US, SAC, NA, EUROPE, IND, ID, VN, TH, SG, TW`)
+try {
+  enviar(`🔎 Buscando el clan *${idClan}* (${region})...`)
+  const { data: c } = await axios.get(`${APINAUFRA}/api/freefire/clan`, { params: { id: idClan, region, apikey: NAUFRA_KEY }, timeout: 70000 })
+  if (!c?.status || !c.nombre) return enviar(`❌ No encontré el clan *${idClan}* en la región *${region}*. Revisa el ID y la región.`)
+  enviar(`🛡️ *CLAN FREE FIRE*
+
+🏷️ Nombre: *${c.nombre}*
+🆔 ID: *${idClan}* · 🌎 ${region}${c.nivel ? `\n⭐ Nivel: *${c.nivel}*` : ''}${c.miembros ? `\n👥 Miembros: *${c.miembros}${c.capacidad ? '/' + c.capacidad : ''}*` : ''}${c.capitan ? `\n👑 Capitán: *${c.capitan}*` : ''}${c.creado ? `\n📅 Creado: *${c.creado}*` : ''}`)
+} catch (e) {
+  console.log('❌ Error en clanff:', e.response?.status || e.message)
+  enviar('❌ No pude consultar el clan. Inténtalo en unos minutos.')
+}
+}
+break
+
+// 🏅 Tarjeta de nivel con imagen (canvas de la API)
+case 'nivel':
+case 'minivel':
+case 'tarjeta':
+case 'levelcard': {
+if(!isReg) return enviar(respuesta.registro)
+const XpN = xpOfsender(sender) || 0
+const nivelN = levelOfsender(sender)
+const baseXp = Rxp(sender)
+const progresoN = Math.max(0, Math.min(100, ((XpN - baseXp) / 1000) * 100)).toFixed(1)
+let avatarN
+try { avatarN = await Naufra.profilePictureUrl(sender, 'image') } catch { avatarN = 'https://i.postimg.cc/85NsPp8j/20260131-152616.jpg' }
+const rangoN = String(Mlevel).replace(/[^\p{L}\p{N} ]/gu, '').trim() || 'Sin rango'
+const textoN = `*🏅 TU NIVEL*
+
+「✿」 Usuario › @${sender.split('@')[0]}
+❖ Nivel › *${nivelN}* ➜ ${nivelN + 1}
+☆ Experiencia › *${XpN} / ${baseXp + 1000}*
+➨ Progreso › *${progresoN}%*
+✐ Rango › ${Mlevel}
+
+> Sube de nivel con *${prefixo}levelup*`
+try {
+  const tarjetaN = await getBuffer(`${APINAUFRA}/api/canvas/level?apikey=${NAUFRA_KEY}&avatar=${encodeURIComponent(avatarN)}&user=${encodeURIComponent(pushname || sender.split('@')[0])}&level=${nivelN}&xp=${XpN}&rank=${encodeURIComponent(rangoN)}&progress=${progresoN}`)
+  if (!tarjetaN) throw new Error('sin imagen')
+  await Naufra.sendMessage(from, { image: tarjetaN, caption: textoN, mentions: [sender] }, { quoted: info })
+} catch (e) {
+  // Si la API falla, al menos se manda con la foto de perfil
+  await Naufra.sendMessage(from, { image: { url: avatarN }, caption: textoN, mentions: [sender] }, { quoted: info })
+}
+}
+break
+
+// ══════════════════════════════════════════════════════════
 // 📦 COMANDOS: DESCARGAS APK Y VARIOS (parejas, apk, etc.)
 // ══════════════════════════════════════════════════════════
 case 'descargarapk':
@@ -3293,49 +3666,8 @@ break
 default:
 
 
-/// 🚫 ANTILINK MEJORADO CON DEPURACIÓN Y COMPATIBILIDAD LID/JID
+// (el antilink se movió más arriba, antes de "if (!isCmd) return", para que revise TODOS los mensajes)
 
-const { jidNormalizedUser } = require("@whiskeysockets/baileys")
-const texto = (budy || "").toLowerCase()
-
-if (isGroup && isAntiLink && !isGroupAdmins && !isOwner) {
-  if (texto.includes(".com") || texto.includes("http://") || texto.includes("https://")) {
-    console.log("⚠️ Enlace detectado:", texto)
-
-    const groupMetadata = await Naufra.groupMetadata(from)
-    const botIsAdmin = groupMetadata.participants.find(p => p.id === owner && p.admin)
-    if (!isBotGroupAdmins) return enviar("⚠️ No soy administrador, no puedo expulsar.")
-
-    const member = groupMetadata.participants.find(p => p.id === sender)
-    if (!member) return console.log("⚠️ El usuario ya no está en el grupo.")
-
-    const Kick = jidNormalizedUser(sender)
-    console.log("👞 Intentando expulsar a:", Kick)
-
-    try {
-      console.log("🗑️ Eliminando mensaje...")
-      await Naufra.sendMessage(from, { 
-        delete: { remoteJid: from, fromMe: false, id: info.key.id, participant: sender } 
-      })
-
-      console.log("🚷 Expulsando usuario...")
-      const result = await Naufra.groupParticipantsUpdate(from, [Kick], "remove")
-      console.log("✅ Resultado expulsión:", result)
-
-      await enviar(`🚫 Se detectó un link prohibido, el usuario @${sender.split("@")[0]} fue eliminado`, { mentions: [sender] })
-
-    } catch (err) {
-      console.log("❌ Error al ejecutar antilink:")
-      console.log("Mensaje:", err.message)
-      console.log("Stack completo:", err)
-      await enviar(`⚠️ No se pudo expulsar a @${sender.split("@")[0]}.\nMotivo: ${err.message}`, { mentions: [sender] })
-    }
-  }
-}
-
-
-
-    
    if (budy.startsWith('=>Duueño')) {
     if (!isOwner) return enviar(respuesta.miowner)
         function Return(sul) {

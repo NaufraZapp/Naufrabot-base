@@ -1,6 +1,6 @@
 {
   "name": "naufraBase",
-  "version": "4.0.0",
+  "version": "6.0.0",
   "description": "Base creada desde cero y 100% midificable.",
   "main": "index.js",
   "scripts": {
@@ -37,4 +37,3 @@
   "author": "Naufra",
   "license": "ISC"
 }
-
