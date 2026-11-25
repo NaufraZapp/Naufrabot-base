@@ -1,0 +1,15 @@
+{
+  "_ayuda": "Pon aquí enlaces de imágenes (https://...). Si dejas una clave vacía, el comando manda solo texto. Puedes poner una lista [\"url1\", \"url2\"] y el bot elige una al azar.",
+  "menu_juegos": "",
+  "menu_remielle": "",
+  "remielle": "",
+  "remielle_frase": "",
+  "tirada_remielle": "",
+  "hollow": "",
+  "cazar": "",
+  "menu_dandy": "",
+  "dandy": "",
+  "elevador": "",
+  "twisted": "",
+  "tienda_dandy": ""
+}
